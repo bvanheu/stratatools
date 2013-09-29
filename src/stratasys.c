@@ -12,7 +12,7 @@
  *     * Neither the name of the <organization> nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -60,7 +60,9 @@ void print_usage() {
     printf("\t-d|--decrypt:\tDecrypt input file into output file\n");
     printf("\t-m|--machine-number <machine number>:\tPrinter serial number\n");
     printf("\tKnown machine number:\n");
-    printf("\t\t0x2C30478BB7DE81E8\n");
+    printf("\t\tFox (aka t-class) - 0x2C30478BB7DE81E8\n");
+    printf("\t\tProdigy (aka p-class) - 0x5394D7657CED641D\n");
+    printf("\t\tQuantum - 0x76C454D532E610F7\n");
     printf("\t-u|--uid <eeprom uid>:\tEEPROM Unique IDentifier\n");
     printf("\t-i|--in <input path>:\tInput file\n");
     printf("\t-o|--out <output path>:\tOutput file\n");

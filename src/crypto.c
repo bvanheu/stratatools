@@ -12,7 +12,7 @@
  *     * Neither the name of the <organization> nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -220,7 +220,7 @@ uint8_t crypto_decrypt_canister(crypto_t *crypto, uint8_t *machine_number, uint8
         // Invalid CRC 2
         printf("invalid.\n");
         printf("\t%4X != %4X\n", crc, *(uint16_t *)&in_buf[encryption_map[12]]);
-        //return 2;
+        return 2;
     }
     printf("valid.\n");
 
@@ -233,7 +233,7 @@ uint8_t crypto_decrypt_canister(crypto_t *crypto, uint8_t *machine_number, uint8
     if (crc != *(uint16_t *)&in_buf[encryption_map[6]]) {
         printf("invalid.\n");
         printf("\t%4X != %4X\n", crc, *(uint16_t *)&in_buf[encryption_map[6]]);
-        //return 3;
+        return 3;
     }
     printf("valid.\n");
 
@@ -248,7 +248,7 @@ uint8_t crypto_decrypt_canister(crypto_t *crypto, uint8_t *machine_number, uint8
     if (crc != *(uint16_t *)&in_buf[encryption_map[13]]) {
         printf("invalid.\n");
         printf("\t%4X != %4X\n", crc, *(uint16_t *)&in_buf[encryption_map[13]]);
-        //return 4;
+        return 4;
     }
     printf("valid.\n");
 
