@@ -48,7 +48,7 @@ This python script is used to create a binary that can be encrypted then flashed
 
 ### bin/stratasys
 
-This binary is used to crypt/decrypt a binary.
+This binary is used to crypt/decrypt a binary. Note that the file must be in binary form and note in hex representation. You may hack the file 'bin/dump_binary.py' in order to make the conversion. The final file should be 512 bytes.
 
 	$ ./bin/stratasys --help
 	-e or -d: encrypt or decrypt
