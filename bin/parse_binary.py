@@ -80,6 +80,18 @@ material_id_to_name[0x2f] = "P401_CST"
 material_id_to_name[0x30] = "ABS_SGRY"
 material_id_to_name[0x31] = "ABS_GRY"
 material_id_to_name[0x33] = "ABSI_GRY"
+material_id_to_name[0x3c] = "P430"
+material_id_to_name[0x3d] = "P430_RED"
+material_id_to_name[0x3e] = "P430_GRN",
+material_id_to_name[0x3f] = "P430_BLK"
+material_id_to_name[0x40] = "P430_YEL"
+material_id_to_name[0x41] = "P430_BLU"
+material_id_to_name[0x42] = "P430_CST"
+material_id_to_name[0x43] = "P430_GRY"
+material_id_to_name[0x44] = "P430_NYL"
+material_id_to_name[0x45] = "P430_ORG"
+material_id_to_name[0x46] = "P430_FLS"
+material_id_to_name[0x47] = "P430_IVR"
 material_id_to_name[0x50] = "ABS-M30I"
 material_id_to_name[0x51] = "ABS-ESD7"
 material_id_to_name[0x64] = "PCABSWHT"
@@ -133,7 +145,7 @@ f_in.close()
 canister_serial_number = struct.unpack("<d", data[0x0:0x08])[0]
 print("Canister S/N: " + str(int(canister_serial_number)))
 material_type = int(struct.unpack("<d", data[0x08:0x10])[0])
-print("Material type: " + material_id_to_name[material_type] + " ("+str(int(material_type))+")")
+print("Material type: " + material_id_to_name[material_type] + " ("+str(material_type)+")")
 manufacturing_lot = struct.unpack("<8s", data[0x10:0x18])[0]
 print("Manufacturing lot: " + str(manufacturing_lot.split('\x00')[0]))
 (year, month, day, hour, minute, second) = struct.unpack("<HBBBBH", data[0x28:0x30])
