@@ -136,7 +136,7 @@ material_id_to_name[0xc9] = "RD8"
 material_id_to_name[0xca] = "RD9"
 material_id_to_name[0xcb] = "RD10"
 
-f_in = open(sys.argv[1])
+f_in = open(sys.argv[1], "rb")
 
 data = f_in.read(512)
 
