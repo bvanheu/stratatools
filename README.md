@@ -47,3 +47,8 @@ All the dates are in international format: yyyy-mm-dd hh:mm:ss
 
 You have to provide the correct machine-type and the valid eeprom uid. You can
 customize all the rest.
+
+## Acknowledgement
+
+Special thanks to the Stratahackers group. Without them, nothing like this could
+be possible. They provided moral and technical support!
