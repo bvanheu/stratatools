@@ -44,9 +44,9 @@ enum encryption_map_name {
     ENC_USE_DATE = 4,
     ENC_INIT_MAT_QTY = 5,
     ENC_PLAINTEXT_CRC = 6,
-    ENC_UNK_CRC =7,
-    ENC_UNK = 8,
-    ENC_UNK_CRC2 = 9,
+    ENC_PLAINTEXT_CRYPTED_CRC =7,
+    ENC_KEY_FRAGMENT = 8,
+    ENC_KEY_FRAGMENT_CRC = 9,
     ENC_UNK_CRC3 = 10,
     ENC_CUR_MAT_QTY = 11,
     ENC_CUR_MAT_QTY_CRYPTED_CRC = 12,
@@ -194,6 +194,7 @@ uint8_t crypto_decrypt_canister(crypto_t *crypto, uint8_t *machine_number, uint8
     // Building key
     printf("[i] Building key ... ");
     crypto_init_key(crypto, machine_number, uid, in_buf, 0x68);
+    //crypto_init_key2(crypto, machine_number, in_buf, 0x68);
     printf("done.\n");
 
     // Decrypt content
