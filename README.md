@@ -3,9 +3,14 @@ Stratasys
 
 This is a software to read and write data on a Stratasys cartridge memory.
 
-## Use case
+You may want to use it so you can refill or build your own cartridge.
 
-You may want to use that software so you can refill/build your own cartridge.
+## Installation
+
+### Dependencies
+
+- python 2.7
+- [pycrypto](https://www.dlitz.net/software/pycrypto/)
 
 ## Usage
 
