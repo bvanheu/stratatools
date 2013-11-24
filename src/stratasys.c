@@ -164,7 +164,7 @@ int main(int argc, char *argv[]) {
         }
         bytes = read(fd, plain_text, 0x68);
         close(fd);
-        printf("%d bytes\n", bytes);
+        printf("%zd bytes\n", bytes);
 
         // Encrypt stuff
         if (crypto_encrypt_canister(crypto, options.machine_number, options.uid, plain_text, crypted_text, 0x68)) {
@@ -177,7 +177,7 @@ int main(int argc, char *argv[]) {
         fd = open(options.out_file, O_CREAT|O_WRONLY, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
         bytes = write(fd, crypted_text, 0x68);
         close(fd);
-        printf("\t%d bytes\n", bytes);
+        printf("\t%zd bytes\n", bytes);
     }
     else {
         // Read plain text
@@ -189,7 +189,7 @@ int main(int argc, char *argv[]) {
         }
         bytes = read(fd, crypted_text, 0x68);
         close(fd);
-        printf("%d bytes\n", bytes);
+        printf("%zd bytes\n", bytes);
 
         // Decrypt stuff
         if (crypto_decrypt_canister(crypto, options.machine_number, options.uid, crypted_text, plain_text, 0x68)) {
@@ -202,7 +202,7 @@ int main(int argc, char *argv[]) {
         fd = open(options.out_file, O_CREAT|O_WRONLY, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
         bytes = write(fd, plain_text, 0x68);
         close(fd);
-        printf("%d bytes\n", bytes);
+        printf("%zd bytes\n", bytes);
     }
 
     return EXIT_SUCCESS;

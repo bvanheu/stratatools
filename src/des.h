@@ -17,7 +17,7 @@ typedef struct {
 
 void DESX_CBCInit(DESX_CBC_CTX *, uint8_t *, uint8_t *, int);
 int DESX_DecryptBlock(DESX_CBC_CTX *context, uint8_t *output, uint8_t *input);
-int DESX_CBCUpdate(DESX_CBC_CTX *, uint8_t *, uint8_t *, unsigned int);
+int DESX_CBCUpdate(DESX_CBC_CTX *, uint8_t *, uint8_t *, size_t len);
 void DESX_CBCRestart(DESX_CBC_CTX *);
 
 #endif // DES_H
