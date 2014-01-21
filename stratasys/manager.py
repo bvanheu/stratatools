@@ -141,7 +141,7 @@ class Manager:
         # Material
         material = Material.from_id(int(struct.unpack_from("<d", cartridge_packed, 0x08)[0]))
         # Manufacturing lot
-        manufacturing_lot = struct.unpack_from("<20s", cartridge_packed, 0x10)[0]
+        manufacturing_lot = struct.unpack_from("<20s", cartridge_packed, 0x10)[0].split('\x00')[0]
         # Manufacturing datetime
         (mfg_datetime_year,
             mfg_datetime_month,
@@ -187,10 +187,6 @@ class Manager:
     def encrypt(self, machine_number, eeprom_uid, cartridge_packed):
         cartridge_crypted = cartridge_packed
 
-        f = open("encrypt_output_packed.bin", "w")
-        f.write(cartridge_packed)
-        f.close()
-
         # Validate key fragment checksum
         # TODO
         # Build the key
@@ -226,10 +222,6 @@ class Manager:
             raise Exception("invalid current material quantity checksum")
         # Decrypt current material quantity
         cartridge_packed[0x58:0x60] = self.crypto.decrypt(key, cartridge_crypted[0x58:0x60])
-
-        f = open("decrypt_output_packed.bin", "w")
-        f.write(cartridge_packed)
-        f.close()
 
         return cartridge_packed
 
