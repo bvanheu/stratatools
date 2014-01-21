@@ -36,7 +36,7 @@ in hexadecimal form without the '0x' prefix.
     To recreate the provided cartridge:
     --machine-type fox --eeprom-uid 4343434343434343 --serial-number 1234.0 --material-name ABS --manufacturing-lot 1234 --manufacturing-date "2001-01-01 01:01:01" --use-date "2002-02-02 02:02:02" --initial-material 11.1 --current-material 22.2 --key-fragment 4141414141414141 --version 1 --signature STRATASYS
 
-If you provide the '-h' option, the information printed will be human readable.
+If you provide the '-u' option, the information printed will be human readable.
 
 If you provide the '-r' option, the arguments will be printed if you want to recreate
 the cartridge.
