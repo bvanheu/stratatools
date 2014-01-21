@@ -17,7 +17,8 @@ You may want to use it so you can refill or build your own cartridge.
 ### Print information about a cartridge
 
 You have to provide the machine type (fox, prodigy or quantum) and the EEPROM uid,
-in hexadecimal form without the '0x' prefix.
+in hexadecimal form without the '0x' prefix. Note that the EEPROM uid should end
+with "23".
 
     $ ./stratasys-cli.py info -t fox -e 4141414141414141 -i eeprom.bin -u -r
     Cartridge
@@ -36,6 +37,9 @@ in hexadecimal form without the '0x' prefix.
     To recreate the provided cartridge:
     --machine-type fox --eeprom-uid 4343434343434343 --serial-number 1234.0 --material-name ABS --manufacturing-lot 1234 --manufacturing-date "2001-01-01 01:01:01" --use-date "2002-02-02 02:02:02" --initial-material 11.1 --current-material 22.2 --key-fragment 4141414141414141 --version 1 --signature STRATASYS
 
+The EEPROM uid should end with '23'. You may have to reverse it. Say you have
+"233a38b1020000c0", you should reverse it to be "c0000002b1383a23".
+
 If you provide the '-u' option, the information printed will be human readable.
 
 If you provide the '-r' option, the arguments will be printed if you want to recreate
@@ -52,6 +56,9 @@ All the dates are in international format: yyyy-mm-dd hh:mm:ss
 
 You have to provide the correct machine-type and the valid eeprom uid. You can
 customize all the rest.
+
+The EEPROM uid should end with '23'. You may have to reverse it. Say you have
+"233a38b1020000c0", you should reverse it to be "c0000002b1383a23".
 
 ## Acknowledgement
 
