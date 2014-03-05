@@ -29,7 +29,6 @@ import argparse
 import struct
 import sys
 from datetime import datetime
-from datetime import datetime
 
 from stratasys.cartridge import Cartridge
 from stratasys.material import Material
