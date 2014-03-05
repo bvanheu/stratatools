@@ -87,6 +87,13 @@ class StratasysConsoleApp():
 
         eeprom_parser.set_defaults(func=self.command_eeprom)
 
+        #
+        # Material options
+        #
+        material_parser = subparsers.add_parser("material", help="Material supported by stratasys")
+        material_parser.add_argument("-l", "--list", action="store_true", help="Print supported materials")
+        material_parser.set_defaults(func=self.command_material)
+
         return parser
 
     def command_eeprom(self, args):
@@ -94,6 +101,10 @@ class StratasysConsoleApp():
             self._eeprom_info(args)
         elif args.output_file:
             self._eeprom_create(args)
+
+    def command_material(self, args):
+        if args.list:
+            self._material_list(args)
 
     def _eeprom_create(self, args):
         cartridge = Cartridge(args.serial_number,
@@ -169,6 +180,12 @@ class StratasysConsoleApp():
                     + " --key-fragment " + str(cartridge.key_fragment).encode("hex") \
                     + " --version " + str(cartridge.version) \
                     + " --signature " + str(cartridge.signature))
+
+    def _material_list(self, args):
+        for k in range(len(Material.material_id_to_name)):
+            m = Material.material_id_to_name[k]
+            if m != "unknown":
+                print(str(k) + "\t" + m)
 
 if __name__ == "__main__":
     app = StratasysConsoleApp()
