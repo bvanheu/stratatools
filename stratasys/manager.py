@@ -129,11 +129,11 @@ class Manager:
     #
     def unpack(self, cartridge_packed):
         # Validating plaintext checksum
-        if self.checksum.checksum(cartridge_packed[0x00:0x40]) != struct.unpack("<H", cartridge_packed[0x40:0x42])[0]:
-            raise Exception("invalid content checksum: should have " + hex(struct.unpack("<H", cartridge_packed[0x40:0x42])[0]) + " but have " + hex(self.checksum.checksum(cartridge_packed[0x00:0x40])))
+        if self.checksum.checksum(cartridge_packed[0x00:0x40]) != struct.unpack("<H", str(cartridge_packed[0x40:0x42]))[0]:
+            raise Exception("invalid content checksum: should have " + hex(struct.unpack("<H", str(cartridge_packed[0x40:0x42]))[0]) + " but have " + hex(self.checksum.checksum(cartridge_packed[0x00:0x40])))
 
         # Validating current material quantity checksum
-        if self.checksum.checksum(cartridge_packed[0x58:0x60]) != struct.unpack("<H", cartridge_packed[0x62:0x64])[0]:
+        if self.checksum.checksum(cartridge_packed[0x58:0x60]) != struct.unpack("<H", str(cartridge_packed[0x62:0x64]))[0]:
             raise Exception("invalid current material quantity checksum")
 
         # Serial number
