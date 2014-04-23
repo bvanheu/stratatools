@@ -35,6 +35,7 @@ from stratasys.material import Material
 from stratasys.manager import Manager
 from stratasys.crypto import Desx_Crypto
 from stratasys.checksum import Crc16_Checksum
+from stratasys.setupcode import *
 
 class StratasysConsoleApp():
     def __init__(self):
@@ -88,6 +89,31 @@ class StratasysConsoleApp():
         eeprom_parser.set_defaults(func=self.command_eeprom)
 
         #
+        # Setup-codes options
+        #
+        setupcode_parser = subparsers.add_parser("setupcode", help="Create/parse a Stratasys setup code")
+        sc_group = setupcode_parser.add_mutually_exclusive_group(required=True)
+        sc_group.add_argument("-d", "--decode", action="store", dest="setup_code", help="Decode a provided code")
+        sc_group.add_argument("-e", "--encode", action="store_true", dest="encode", help="")
+
+        sc_encode = setupcode_parser.add_argument_group(title="Encode options", description="Options for setup code encoding")
+        sc_encode.add_argument("-n", "--serial-number", action="store", dest="serial_number")
+        sc_encode.add_argument("-s", "--system-type", action="store", dest="system_type", choices=SystemType.all())
+        sc_encode.add_argument("-t", "--type", action="store", dest="code_type", choices=CodeType.all())
+        sc_encode.add_argument("-l", "--envelope-size", action="store", dest="envelope_size", choices=EnvelopeSize.all())
+        sc_encode.add_argument("-b", "--build-speed", action="store", dest="build_speed", choices=BuildSpeed.all())
+        sc_encode.add_argument("-m", "--material", action="store", dest="material")
+        sc_encode.add_argument("-v", "--version", action="store", dest="version")
+        # temporary
+        sc_encode.add_argument("-a", "--abs", action="store", dest="m_abs", type=int, default=0)
+        sc_encode.add_argument("-c", "--abs-pc", action="store", dest="m_abs_pc", type=int, default=0)
+        sc_encode.add_argument("-p", "--pc", action="store", dest="m_pc", type=int, default=0)
+        sc_encode.add_argument("-f", "--ppsf", action="store", dest="m_ppsf", type=int, default=0)
+        sc_encode.add_argument("-i", "--iso", action="store", dest="m_iso", type=int, default=0)
+
+        setupcode_parser.set_defaults(func=self.command_setupcode)
+
+        #
         # Material options
         #
         material_parser = subparsers.add_parser("material", help="Material supported by stratasys")
@@ -101,6 +127,12 @@ class StratasysConsoleApp():
             self._eeprom_info(args)
         elif args.output_file:
             self._eeprom_create(args)
+
+    def command_setupcode(self, args):
+        if args.setup_code:
+            self._setupcode_decode(args)
+        elif args.encode:
+            self._setupcode_encode(args)
 
     def command_material(self, args):
         if args.list:
@@ -186,6 +218,23 @@ class StratasysConsoleApp():
             m = Material.material_id_to_name[k]
             if m != "unknown":
                 print(str(k) + "\t" + m)
+
+    def _setupcode_encode(self, args):
+        encoder = SetupcodeEncoder()
+        encoder.encode(args.serial_number, args.system_type, args.envelope_size, args.build_speed, args.material, args.code_type, args.version, args.m_abs, args.m_abs_pc, args.m_pc, args.m_ppsf, args.m_iso)
+
+    def _setupcode_decode(self, args):
+        encoder = SetupcodeEncoder()
+        s = encoder.decode(args.setup_code)
+
+        print("Setup code")
+        print("\tSerial number:\t" + s.serial_number)
+        print("\tSystem type:\t" + s.system_type)
+        print("\tEnvelope size:\t" + s.envelope_size)
+        print("\tBuild speed:\t" + s.build_speed)
+        print("\tVersion:\t" + s.version)
+        print("\tCode type:\t" + s.code_type)
+        print("\tMaterial:\t" + s.material)
 
 if __name__ == "__main__":
     app = StratasysConsoleApp()
