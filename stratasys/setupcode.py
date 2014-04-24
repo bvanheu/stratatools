@@ -245,10 +245,7 @@ class SetupcodeEncoder():
         return s
 
     def _encode_param(self, code, value, notv):
-        position = 31
-        if code in self.dictionary:
-            position = self.dictionary.index(code)
-        return self.dictionary[~notv & position & 0x1F | value]
+        return self.dictionary[~notv & self._dict_get_position(code) & 0x1F | value]
 
     def _shift_code(self, setup_code, serial_number, system_type, envelope_size, build_speed, material, code_type):
         # Get the shift base value
@@ -329,7 +326,7 @@ class SetupcodeEncoder():
         base_shift = self.dictionary.index(input_code[17])
 
         for i in [0, 1, 2, 3, 5, 6, 7, 8, 10, 11, 12, 13, 15, 16, 17, 18]:
-            position = self.dictionary.index(input_code[i])
+            position = self._dict_get_position(input_code[i])
             new_code.append(self._do_unshift(position, base_shift + self.magic_shift[i]))
 
         for i in [4, 9, 14]:
@@ -356,7 +353,7 @@ class SetupcodeEncoder():
     def _checksum_compose(self, code):
         checksum = 0
         for i in [0, 1, 2, 3, 5, 6, 10, 11, 12, 13, 15, 16, 18]:
-            checksum += self.dictionary.index(chr(code[i]))
+            checksum += self._dict_get_position(chr(code[i]))
         return checksum
 
     def _get_material(self, code):
@@ -364,3 +361,14 @@ class SetupcodeEncoder():
         material += ((code[5] & 0x01) + (code[5] & 0x02) + (code[5] & 0x04) + (code[5] & 0x08))
 
         return material
+
+    def _dict_get_position(self, value):
+        try:
+            position = self.dictionary.index(value)
+            if position > 31:
+                position = 31
+        except:
+            position = 31
+
+        return position
+
