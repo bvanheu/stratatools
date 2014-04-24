@@ -335,14 +335,15 @@ class SetupcodeEncoder():
         return new_code
 
     def _do_unshift(self, base_shift, shift):
+        value = shift
         if shift > 0x20:
-            shift = shift - 10 * ((((((205 * shift) & 0xff) >> 8 & 0xff)) >> 3) & 0xff)
+            value = shift % 10
 
-        ret = base_shift - shift
-        if (base_shift - shift) < 0:
-            return ret + 0x20
-        else:
-            return ret
+        value_2 = 0
+        if base_shift - value < 0:
+            value_2 = 0x20
+
+        return (base_shift - value + value_2) & 0xff
 
     def _checksum(self, code):
         checksum = 0
