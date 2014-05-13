@@ -1,61 +1,65 @@
 Stratasys
 ---------
 
-This is a software to read and write data on a Stratasys canister memory, Fortus model.
+This is a software to read and write data on a Stratasys cartridge memory.
 
-## Use case
+You may want to use it so you can refill or build your own cartridge.
 
-You may want to use that software so you can refill your own canister, build your own canister, etc.
+## Installation
 
-## How do i compile 'stratasys'?
+### Dependencies
 
-Simply run:
-    $ ./build.sh
+- python 2.7
+- [pycrypto](https://www.dlitz.net/software/pycrypto/)
 
-The binary will be in 'bin/stratasys'
+## Usage
 
-## Tools
+### Print information about a cartridge
 
-### bin/parse_binary.py
+You have to provide the machine type (fox, prodigy or quantum) and the EEPROM uid,
+in hexadecimal form without the '0x' prefix. Note that the EEPROM uid use to end
+with "23".
 
-This python script read a decrypted configuration to a human readable format.
+    $ ./stratasys-cli.py eeprom -t fox -e 4343434343434343 -i random_file.bin
 
-	$ ./bin/parse_binary.py test.bin
-	Canister S/N: <serial number>
-	Material type: <material>
-	Manufacturing lot: <mfg lot>
-	Manufacturing date: <mfg date>
-	Use date: <last use date>
-	Initial material qty: <quantity of material>
-	Current material qty: <remaining material>
-	Key: <configuration key>
+The EEPROM uid use to end with '23'. You may have to reverse it. Say you have
+"233a38b1020000c0", you should reverse it to be "c0000002b1383a23".
 
-### bin/create_binary.py
+If you provide the '-r' option, arguments to pass to stratasys-cli will be printed
+to help you recreate the cartridge.
 
-This python script is used to create a binary that can be encrypted then flashed on a canister.
+The input file must be a binary file.
 
-	$ ./bin/create_binary.py --help
-	-s : canister serial number
-	-t : material type (see the list in the file create_binary.py)
-	-d : creation date
-	-u : last use date
-	-i : initial material quantity
-	-c : remaining material quantity
-	-k : key to crypt/decrypt this configuration file
-	-o : output file
+### Create your own cartridge
 
-    $ ./create_binary.py -s 123456789.0 -t PC-ABS -l 1234 -d "2013-09-28 01:02:03" -u "2013-09-29 01:02:03" -i 92.3 -c 91.6059082031 -k 123456789abcdef0 -o canister.bin
+By providing all required information, the software will provide a new valid eeprom
+that you can write on a cartridge.
 
-### bin/stratasys
+    $ ./stratasys-cli.py eeprom --machine-type fox --eeprom-uid 4343434343434343 --serial-number 1234.0 --material-name ABS --manufacturing-lot 1234 --manufacturing-date "2001-01-01 01:01:01" --use-date "2002-02-02 02:02:02" --initial-material 11.1 --current-material 22.2 --key-fragment 4141414141414141 --version 1 --signature STRATASYS -o random_file.bin
 
-This binary is used to crypt/decrypt a binary. Note that the file must be in binary form and note in hex representation. You may hack the file 'bin/dump_binary.py' in order to make the conversion. The final file should be 512 bytes.
+All the dates are in international format: yyyy-mm-dd hh:mm:ss
 
-	$ ./bin/stratasys --help
-	-e or -d: encrypt or decrypt
-	-m : printer model number
-	-u : EEPROM canister serial number
-	-i : input file
-	-o : output file
+You have to provide the correct machine-type and the valid eeprom uid. You can
+customize all the rest.
 
-    $ ./bin/stratasys -e -m 123456789abcdef0 -u 123456789abcdef0 -i ./canister.bin -o ./crypted_canister.bin
+The EEPROM uid use to end with '23'. You may have to reverse it. Say you have
+"233a38b1020000c0", you should reverse it to be "c0000002b1383a23".
 
+The generated file will be 113 bytes in size. You can complete the file with zeroes
+if you want to make it 512 bytes long, the usual EEPROM size.
+
+### List supported material
+
+If you want a list of all known material, simply:
+    $ ./stratasys-cli.py material --list
+    0       ABS
+    1       ABS_RED
+    2       ABS_GRN
+    [...]
+
+Use those names when creating a new cartridge.
+
+## Acknowledgement
+
+Special thanks to the Stratahackers group. Without them, nothing like this could
+be possible. They provided moral and technical support!
