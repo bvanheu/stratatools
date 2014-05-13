@@ -213,12 +213,12 @@ class Manager:
         # Build the key
         key = self.build_key(cartridge_crypted[0x48:0x50], machine_number, eeprom_uid)
         # Validate crypted content checksum
-        if self.checksum.checksum(cartridge_crypted[0x00:0x40]) != struct.unpack("<H", cartridge_crypted[0x46:0x48])[0]:
+        if self.checksum.checksum(cartridge_crypted[0x00:0x40]) != struct.unpack("<H", str(cartridge_crypted[0x46:0x48]))[0]:
             raise Exception("invalid crypted content checksum")
         # Decrypt content
         cartridge_packed[0x00:0x40] = self.crypto.decrypt(key, cartridge_crypted[0x00:0x40])
         # Validate crypted current material quantity checksum
-        if self.checksum.checksum(cartridge_crypted[0x58:0x60]) != struct.unpack("<H", cartridge_crypted[0x60:0x62])[0]:
+        if self.checksum.checksum(cartridge_crypted[0x58:0x60]) != struct.unpack("<H", str(cartridge_crypted[0x60:0x62]))[0]:
             raise Exception("invalid current material quantity checksum")
         # Decrypt current material quantity
         cartridge_packed[0x58:0x60] = self.crypto.decrypt(key, cartridge_crypted[0x58:0x60])
