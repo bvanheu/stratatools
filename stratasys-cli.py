@@ -172,7 +172,7 @@ class StratasysConsoleApp():
 
         machine_number = bytearray("0000000000000000".decode("hex"))
         if args.machine_type == "fox":
-            machine_number = bytearray("2C30479BB7DE81E8".decode("hex"))
+            machine_number = bytearray("2C30478BB7DE81E8".decode("hex"))
         elif args.machine_type == "prodigy":
             machine_number = bytearray("5394D7657CED641D".decode("hex"))
         elif args.machine_type == "quantum":
