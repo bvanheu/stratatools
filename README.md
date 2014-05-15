@@ -59,6 +59,24 @@ If you want a list of all known material, simply:
 
 Use those names when creating a new cartridge.
 
+## Misc
+
+### Bus-pirate: read/write EEPROM
+
+- Use the MISO wire (orange) for the data
+- Use the GROUND wire (black) on the ground
+- Connect the 5V (grey) on the pull-up voltage input (blue)
+
+Use the scripts available in the "helper" directory.
+
+To read an eeprom:
+
+    $ ./bp_read.py /dev/ttyUSB0 eeprom.bin
+
+To write an eeprom:
+
+    $ ./bp_write.py /dev/ttyUSB0 eeprom_new.bin
+
 ## Acknowledgement
 
 Special thanks to the Stratahackers group. Without them, nothing like this could
