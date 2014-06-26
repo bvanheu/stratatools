@@ -23,31 +23,24 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from datetime import datetime
+#
+# A machine is a printer from stratasys
+#
+type_to_number = {
+    "fox": "2C30478BB7DE81E8",
+    "fox2": "2C30479BB7DE81E8",
+    "prodigy": "5394D7657CED641D",
+    "quantum": "76C454D532E610F7",
+}
 
-class Cartridge:
-    def __init__(self, serial_number=0, material_name=None, manufacturing_lot="", manufacturing_date=datetime.today(), use_date=datetime.today(), initial_material_quantity=0.0, current_material_quantity=0.0, key_fragment=bytearray(8), version=0x1, signature="STRATASYS"):
-        # Serial number
-        self.serial_number = serial_number
-        # Material (see material.py)
-        self.material_name = material_name
-        # Manufacturing lot
-        self.manufacturing_lot = manufacturing_lot
-        # Manufacturing date
-        self.manufacturing_date = manufacturing_date
-        # Last use date
-        self.use_date = use_date
-        # Initial material quantity, in cubic feet
-        self.initial_material_quantity = initial_material_quantity
-        # Remaining material quantity
-        self.current_material_quantity = current_material_quantity
-        # Key used to encrypt / decrypt
-        self.key_fragment = key_fragment
-        # Version
-        self.version = version
-        # Signature
-        self.signature = signature
+number_to_type = {}
 
-    def __unicode__(self):
-        pass
+def get_number_from_type(type):
+    return type_to_number[type]
 
+def get_type_from_number(number):
+    if len(number_to_type) == 0:
+        for key, value in enumerate(type_to_number):
+            number_to_type[value] = key
+
+    return number_to_type[number]

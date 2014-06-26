@@ -26,8 +26,8 @@
 import datetime
 import struct
 
-from cartridge import Cartridge
-from material import Material
+import cartridge
+import material
 
 #
 # CartridgeManager is used to create, encrypt and decrypt Stratasys cartridge
@@ -52,9 +52,6 @@ from material import Material
 #       14 0x00: 0x48 - crypted/plaintext (start, len)
 #       15 0x58: 0x10 - unknown, looks like DEX IV, but why?
 #       16 0x48: 0x10 - ^
-
-class BadChecksumException(Exception):
-    pass
 
 class Manager:
     def __init__(self, crypto, checksum):
@@ -87,7 +84,7 @@ class Manager:
         # serial number
         struct.pack_into("<d", eeprom, 0x0, cartridge.serial_number)
         # material id
-        struct.pack_into("<d", eeprom, 0x08, cartridge.material.id)
+        struct.pack_into("<d", eeprom, 0x08, material.get_id_from_name(cartridge.material_name))
         # manufacturing lot
         struct.pack_into("<20s", eeprom, 0x10, cartridge.manufacturing_lot)
         # version (not sure)
@@ -112,7 +109,7 @@ class Manager:
         # plaintext checksum
         struct.pack_into("<H", eeprom, 0x40, self.checksum.checksum(eeprom[0x00:0x40]))
         # key
-        struct.pack_into("<8s", eeprom, 0x48, str(cartridge.key_fragment))
+        struct.pack_into("<8s", eeprom, 0x48, str(cartridge.key_fragment.decode("hex")))
         # key checksum
         struct.pack_into("<H", eeprom, 0x50, self.checksum.checksum(eeprom[0x48:0x50]))
         # current material quantity
@@ -139,7 +136,7 @@ class Manager:
         # Serial number
         serial_number = struct.unpack_from("<d", cartridge_packed, 0x0)[0]
         # Material
-        material = Material.from_id(int(struct.unpack_from("<d", cartridge_packed, 0x08)[0]))
+        material_name = material.get_name_from_id(int(struct.unpack_from("<d", cartridge_packed, 0x08)[0]))
         # Manufacturing lot
         manufacturing_lot = struct.unpack_from("<20s", cartridge_packed, 0x10)[0].split('\x00')[0]
         # Manufacturing datetime
@@ -173,13 +170,13 @@ class Manager:
         # Version
         version = struct.unpack_from("<H", cartridge_packed, 0x24)[0]
         # Key fragment
-        key_fragment = bytearray(struct.unpack_from("<8s", cartridge_packed, 0x48)[0])
+        key_fragment = str(struct.unpack_from("<8s", cartridge_packed, 0x48)[0]).encode("hex")
         # Current material quantity
         current_material_quantity = struct.unpack_from("<d", cartridge_packed, 0x58)[0]
         # Signature
         signature = struct.unpack_from("<9s", cartridge_packed, 0x68)[0]
 
-        return Cartridge(serial_number, material, manufacturing_lot, mfg_datetime, use_datetime, initial_material_quantity, current_material_quantity, key_fragment, version, signature)
+        return cartridge.Cartridge(serial_number, material_name, manufacturing_lot, mfg_datetime, use_datetime, initial_material_quantity, current_material_quantity, key_fragment, version, signature)
 
     #
     # Encrypt a packed cartridge into a crypted cartridge
@@ -189,6 +186,7 @@ class Manager:
 
         # Validate key fragment checksum
         # TODO
+
         # Build the key
         key = self.build_key(cartridge_packed[0x48:0x50], machine_number, eeprom_uid)
         # Encrypt content
@@ -210,6 +208,7 @@ class Manager:
 
         # Validate key fragment checksum
         # TODO
+
         # Build the key
         key = self.build_key(cartridge_crypted[0x48:0x50], machine_number, eeprom_uid)
         # Validate crypted content checksum
@@ -228,9 +227,9 @@ class Manager:
     #
     # Build a key used to encrypt/decrypt a cartridge
     #
-    # Each parameters should be of type bytearray
-    #
     def build_key(self, cartridge_key, machine_number, eeprom_uid):
+        machine_number = bytearray(machine_number.decode("hex"))
+        eeprom_uid = bytearray(eeprom_uid.decode("hex"))
         key = bytearray(16)
 
         key[0] = ~cartridge_key[0] & 0xff

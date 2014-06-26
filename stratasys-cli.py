@@ -30,11 +30,12 @@ import struct
 import sys
 from datetime import datetime
 
-from stratasys.cartridge import Cartridge
-from stratasys.material import Material
-from stratasys.manager import Manager
-from stratasys.crypto import Desx_Crypto
-from stratasys.checksum import Crc16_Checksum
+from stratasys import cartridge
+from stratasys import material
+from stratasys import machine
+from stratasys import manager
+from stratasys import crypto
+from stratasys import checksum
 from stratasys.setupcode import *
 
 class StratasysConsoleApp():
@@ -48,9 +49,6 @@ class StratasysConsoleApp():
     def parse_date(self, datestr):
         return datetime.strptime(datestr, "%Y-%m-%d %H:%M:%S")
 
-    def parse_hexadecimal(self, data):
-        return bytearray(data.decode("hex"))
-
     def build_argparser(self):
         parser = argparse.ArgumentParser(description="Stratasys EEPROM manager")
 
@@ -62,7 +60,7 @@ class StratasysConsoleApp():
         eeprom_parser = subparsers.add_parser("eeprom", help="Create/parse a cartridge EEPROM")
         # Options used for both reading / writing eeprom
         eeprom_parser.add_argument("-t", "--machine-type", action="store", choices=["fox", "prodigy", "quantum"], help="Machine type (Fox T-class, Prodigy P-class, Quantum)", required=True)
-        eeprom_parser.add_argument("-e", "--eeprom-uid", action="store", type=self.parse_hexadecimal, dest="eeprom_uid", required=True, help="Format: [a-f0-9]{14}23, example: 11010a01ba325d23")
+        eeprom_parser.add_argument("-e", "--eeprom-uid", action="store", dest="eeprom_uid", required=True, help="Format: [a-f0-9]{14}23, example: 11010a01ba325d23")
 
         # Input or output options
         io_group = eeprom_parser.add_mutually_exclusive_group(required=True)
@@ -81,7 +79,7 @@ class StratasysConsoleApp():
         output_group.add_argument("-u", "--use-date", action="store", type=self.parse_date, dest="use_date", help="Format \"yyyy-mm-dd hh:mm:ss\", examples: \"2014-01-01 13:14:15\"")
         output_group.add_argument("-n", "--initial-material", action="store", type=float, dest="initial_material_quantity", help="Unit: cubic inches, format [0-9]{1,}.[0-9]{1,}, examples: 91.5 - 100.0 - 0.123456789")
         output_group.add_argument("-c", "--current-material", action="store", type=float, dest="current_material_quantity", help="Unit: cubic inches, format [0-9]{1,}.[0-9]{1,} examples: 91.5 - 100.0 - 0.123456789")
-        output_group.add_argument("-k", "--key-fragment", action="store", type=self.parse_hexadecimal, dest="key_fragment", help="Format [a-f0-9]{16}, examples: abcdef0123456789")
+        output_group.add_argument("-k", "--key-fragment", action="store", dest="key_fragment", help="Format [a-f0-9]{16}, examples: abcdef0123456789")
         output_group.add_argument("-s", "--serial-number", action="store", type=float, dest="serial_number", help="Format: [0-9]{1,}.0, example: 1.0 - 123456789.0 - 413203.0")
         output_group.add_argument("-v", "--version", action="store", type=int, dest="version", help="Format: [0-9]{1}, examples: 0 - 1")
         output_group.add_argument("-g", "--signature", action="store", type=str, default="STRATASYS", dest="signature", help="Format: [a-z]{0,9}, examples: STRATASYS - MYOWNSIG - EMPTY")
@@ -139,8 +137,8 @@ class StratasysConsoleApp():
             self._material_list(args)
 
     def _eeprom_create(self, args):
-        cartridge = Cartridge(args.serial_number,
-                Material.from_name(args.material_name),
+        cart = cartridge.Cartridge(args.serial_number,
+                args.material_name,
                 args.manufacturing_lot,
                 args.manufacturing_date,
                 args.use_date,
@@ -150,16 +148,10 @@ class StratasysConsoleApp():
                 args.version,
                 args.signature)
 
-        machine_number = bytearray("0000000000000000".decode("hex"))
-        if args.machine_type == "fox":
-            machine_number = bytearray("2C30478BB7DE81E8".decode("hex"))
-        elif args.machine_type == "prodigy":
-            machine_number = bytearray("5394D7657CED641D".decode("hex"))
-        elif args.machine_type == "quantum":
-            machine_number = bytearray("76C454D532E610F7".decode("hex"))
+        machine_number = machine.get_number_from_type(args.machine_type)
 
-        m = Manager(Desx_Crypto(), Crc16_Checksum())
-        eeprom = m.encode(machine_number, args.eeprom_uid, cartridge)
+        m = manager.Manager(crypto.Desx_Crypto(), checksum.Crc16_Checksum())
+        eeprom = m.encode(machine_number, args.eeprom_uid, cart)
 
         f = open(args.output_file, "wb")
         f.write(eeprom)
@@ -170,32 +162,27 @@ class StratasysConsoleApp():
         cartridge_crypted = bytearray(f.read())
         f.close()
 
-        machine_number = bytearray("0000000000000000".decode("hex"))
-        if args.machine_type == "fox":
-            machine_number = bytearray("2C30478BB7DE81E8".decode("hex"))
-        elif args.machine_type == "prodigy":
-            machine_number = bytearray("5394D7657CED641D".decode("hex"))
-        elif args.machine_type == "quantum":
-            machine_number = bytearray("76C454D532E610F7".decode("hex"))
-
         m = Manager(Desx_Crypto(), Crc16_Checksum())
+        m = manager.Manager(crypto.Desx_Crypto(), checksum.Crc16_Checksum())
+        machine_number = machine.get_number_from_type(args.machine_type)
         cartridge = m.decode(machine_number, args.eeprom_uid, cartridge_crypted)
 
         print("Cartridge - '" + args.input_file + "'")
         print("-"*79)
         print("Serial number\t\t" + str(cartridge.serial_number))
-        print("Material\t\t" + cartridge.material.name + " (" + str(cartridge.material.id) + " - " + hex(cartridge.material.id) +")")
+        material_id = material.get_id_from_name(cartridge.material_name)
+        print("Material\t\t" + cartridge.material_name + " (" + str(material_id) + " - " + hex(material_id) +")")
         print("Manufacturing lot\t" + str(cartridge.manufacturing_lot))
         print("Manufacturing date\t" + str(cartridge.manufacturing_date))
         print("Last use date\t\t" + str(cartridge.use_date))
         print("Initial quantity\t" + str(cartridge.initial_material_quantity))
         print("Current quantity\t" + str(cartridge.current_material_quantity))
-        print("Key fragment\t\t" + str(cartridge.key_fragment).encode("hex"))
+        print("Key fragment\t\t" + str(cartridge.key_fragment))
         print("Version\t\t\t" + str(cartridge.version))
         print("Signature\t\t" + str(cartridge.signature))
         print("")
-        print("Machine type:\t\t" + str(args.machine_type) + " " + str(machine_number).encode("hex"))
-        print("EEPROM uid:\t\t" + str(args.eeprom_uid).encode("hex"))
+        print("Machine type:\t\t" + str(args.machine_type) + " " + str(machine_number))
+        print("EEPROM uid:\t\t" + str(args.eeprom_uid))
 
         if args.recreate_input_file:
             print("\nTo recreate this cartridge:")
