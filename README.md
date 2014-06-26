@@ -77,6 +77,10 @@ To write an eeprom:
 
     $ ./bp_write.py /dev/ttyUSB0 eeprom_new.bin
 
+### Setup code
+
+Not supported yet.
+
 ## Acknowledgement
 
 Special thanks to the Stratahackers group. Without them, nothing like this could
