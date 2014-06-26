@@ -162,7 +162,6 @@ class StratasysConsoleApp():
         cartridge_crypted = bytearray(f.read())
         f.close()
 
-        m = Manager(Desx_Crypto(), Crc16_Checksum())
         m = manager.Manager(crypto.Desx_Crypto(), checksum.Crc16_Checksum())
         machine_number = machine.get_number_from_type(args.machine_type)
         cartridge = m.decode(machine_number, args.eeprom_uid, cartridge_crypted)
