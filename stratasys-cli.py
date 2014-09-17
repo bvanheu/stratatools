@@ -59,7 +59,7 @@ class StratasysConsoleApp():
         #
         eeprom_parser = subparsers.add_parser("eeprom", help="Create/parse a cartridge EEPROM")
         # Options used for both reading / writing eeprom
-        eeprom_parser.add_argument("-t", "--machine-type", action="store", choices=["fox", "prodigy", "quantum"], help="Machine type (Fox T-class, Prodigy P-class, Quantum)", required=True)
+        eeprom_parser.add_argument("-t", "--machine-type", action="store", choices=["fox", "fox2", "prodigy", "quantum"], help="Machine type (Fox T-class, Prodigy P-class, Quantum)", required=True)
         eeprom_parser.add_argument("-e", "--eeprom-uid", action="store", dest="eeprom_uid", required=True, help="Format: [a-f0-9]{14}23, example: 11010a01ba325d23")
 
         # Input or output options
