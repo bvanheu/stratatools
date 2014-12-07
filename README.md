@@ -59,15 +59,29 @@ If you want a list of all known material, simply:
 
 Use those names when creating a new cartridge.
 
-## Misc
+## Interfacing with the cartridge
 
-### Bus-pirate: read/write EEPROM
+### Bus-pirate
 
 - Use the MISO wire (orange) for the data
 - Use the GROUND wire (black) on the ground
 - Connect the 5V (grey) on the pull-up voltage input (blue)
 
-Use the scripts available in the "helper" directory.
+Use the following schematic as a reference:
+
+    Bus pirate
+
+    grey    >---+
+                |
+    blue    >---+
+                 eeprom
+                +------+
+    orange  >---| Data |
+                |      |
+    black   >---| Gnd  |
+                +------+
+
+Use the scripts available in the `helper` directory.
 
 To read an eeprom:
 
@@ -77,7 +91,49 @@ To write an eeprom:
 
     $ ./bp_write.py /dev/ttyUSB0 eeprom_new.bin
 
-### Setup code
+### Raspberry Pi
+
+- Use the GPIO 4 (pin 7) for the data
+- Use any GROUND (pin 6,9,14,20 or 25) on the ground
+- Use the 5V Power (pin 2) to pull-up the data line using a ~4.7k resistor
+
+Use the following schematic as a reference:
+
+    Raspberry pi
+
+     5V     >---+
+                |
+           4.7k Z    eeprom
+                |   +------+
+    GPIO4   >---+---| Data |
+                    |      |
+    GROUND  >-------| Gnd  |
+                    +------+
+
+Then you'll need to probe 2 kernel modules:
+
+    $ sudo modprobe w1-wire w1-ds2433
+
+You should now see your eeprom appearing:
+
+    $ ls -l /sys/bus/w1/devices/w1_bus_master1
+    23-xxxxxxxxxxxx/
+    (...)
+
+To print the eeprom uid:
+
+    $ xxd -p /sys/bus/w1/devices/w1_bus_master1/23-xxxxxxxxxxxx/id
+    23xxxxxxxxxxxx
+
+To read an eeprom:
+
+    $ cp /sys/bus/w1/devices/w1_bus_master1/23-xxxxxxxxxxxx/eeprom ~/eeprom.bin
+
+To write an eeprom:
+
+    $ cp ~/eeprom_new.bin /sys/bus/w1/devices/w1_bus_master1/23-xxxxxxxxxxxx/eeprom
+
+## Setup code
 
 Not supported yet.
 
