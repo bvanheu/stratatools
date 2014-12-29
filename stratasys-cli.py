@@ -187,21 +187,21 @@ class StratasysConsoleApp():
             print("\nTo recreate this cartridge:")
             print("--output-file XXX_REPLACE_ME_XXX " \
                     + "--machine-type " + str(args.machine_type) \
-                    + " --eeprom-uid " + str(args.eeprom_uid).encode("hex") \
+                    + " --eeprom-uid " + str(args.eeprom_uid) \
                     + " --serial-number " + str(cartridge.serial_number) \
-                    + " --material-name " + str(cartridge.material.name) \
+                    + " --material-name " + str(cartridge.material_name) \
                     + " --manufacturing-lot " + str(cartridge.manufacturing_lot) \
                     + " --manufacturing-date \"" + str(cartridge.manufacturing_date) + "\"" \
                     + " --use-date \"" + str(cartridge.use_date) + "\"" \
                     + " --initial-material " + str(cartridge.initial_material_quantity) \
                     + " --current-material " + str(cartridge.current_material_quantity) \
-                    + " --key-fragment " + str(cartridge.key_fragment).encode("hex") \
+                    + " --key-fragment " + str(cartridge.key_fragment) \
                     + " --version " + str(cartridge.version) \
                     + " --signature " + str(cartridge.signature))
 
     def _material_list(self, args):
-        for k in range(len(Material.material_id_to_name)):
-            m = Material.material_id_to_name[k]
+        for k in range(len(material.id_to_name)):
+            m = material.id_to_name[k]
             if m != "unknown":
                 print(str(k) + "\t" + m)
 
