@@ -59,6 +59,10 @@ If you want a list of all known material, simply:
 
 Use those names when creating a new cartridge.
 
+## Interesting fork / rewrite
+
+* [slaytonrd/CartridgeWriter](https://github.com/slaytonrnd/CartridgeWriter) - rewritten in C# by slaytonrd
+
 ## Interfacing with the cartridge
 
 ### Bus-pirate
