@@ -238,14 +238,14 @@ class Manager:
         key[3] = ~cartridge_key[6] & 0xff
         key[4] = ~machine_number[0] & 0xff
         key[5] = ~machine_number[2] & 0xff
-        key[6] = ~eeprom_uid[2] & 0xff
+        key[6] = ~eeprom_uid[1] & 0xff
         key[7] = ~machine_number[6] & 0xff
         key[8] = ~machine_number[7] & 0xff
         key[9] = ~eeprom_uid[6] & 0xff
         key[10] = ~machine_number[3] & 0xff
         key[11] = ~machine_number[1] & 0xff
         key[12] = ~cartridge_key[7] & 0xff
-        key[13] = ~eeprom_uid[1] & 0xff
+        key[13] = ~eeprom_uid[2] & 0xff
         key[14] = ~cartridge_key[3] & 0xff
         key[15] = ~cartridge_key[1] & 0xff
 

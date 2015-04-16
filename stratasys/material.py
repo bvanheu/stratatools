@@ -28,7 +28,7 @@
 # It might have some information like optimal working temperature, etc.
 #
 
-id_to_name = ["unknown"] * 0x100
+id_to_name = ["unknown"] * 0x200
 id_to_name[0x00] = "ABS"
 id_to_name[0x01] = "ABS_RED"
 id_to_name[0x02] = "ABS_GRN"
@@ -125,16 +125,34 @@ id_to_name[0xbe] = "PC_ISO_T"
 id_to_name[0xbf] = "P1_5M1"
 id_to_name[0xc0] = "P1_5M2"
 id_to_name[0xc1] = "P1_5M3"
-id_to_name[0xc2] = "RD1"
-id_to_name[0xc3] = "RD2"
-id_to_name[0xc4] = "RD3"
-id_to_name[0xc5] = "RD4"
-id_to_name[0xc6] = "RD5"
-id_to_name[0xc7] = "RD6"
-id_to_name[0xc8] = "RD7"
-id_to_name[0xc9] = "RD8"
-id_to_name[0xca] = "RD9"
-id_to_name[0xcb] = "RD10"
+id_to_name[0xc6] = "Rddev"
+id_to_name[0xc7] = "RddevS"
+id_to_name[0xc8] = "RD1"
+id_to_name[0xc9] = "RD2"
+id_to_name[0xca] = "RD3"
+id_to_name[0xcb] = "RD4"
+id_to_name[0xcc] = "RD5"
+id_to_name[0xcd] = "RD-S1"
+id_to_name[0xce] = "RD-S2"
+id_to_name[0xcf] = "RD-S3"
+id_to_name[0xd0] = "RD-S4"
+id_to_name[0xd1] = "RD-S5"
+id_to_name[0xfa] = "uP430"
+id_to_name[0xfb] = "uP430_RED"
+id_to_name[0xfc] = "uP430_GRN"
+id_to_name[0xfd] = "uP430_BLK"
+id_to_name[0xfe] = "uP430_YEL"
+id_to_name[0xff] = "uP430_BLU"
+id_to_name[0x100] = "uP430_GRY"
+id_to_name[0x118] = "SR30XL"
+id_to_name[0x119] = "P430XL_IVR"
+id_to_name[0x11a] = "P430XL"
+id_to_name[0x11b] = "P430XL_RED"
+id_to_name[0x11c] = "P430XL_GRN"
+id_to_name[0x11d] = "P430XL_BLK"
+id_to_name[0x11e] = "P430XL_YEL"
+id_to_name[0x11f] = "P430XL_BLU"
+
 
 name_to_id = {}
 
