@@ -64,6 +64,30 @@ class Setupcode():
     def __init__(self):
         pass
 
+class CodeMaterial():
+    id_to_material = [""] * 9
+    id_to_material[0x00] = "ABS"
+    id_to_material[0x01] = "PC-ABS"
+    id_to_material[0x02] = "PC"
+    id_to_material[0x03] = "PC-ISO"
+    id_to_material[0x04] = "PPSF"
+    id_to_material[0x05] = "ABS-M30"
+    id_to_material[0x06] = "ABSI"
+    id_to_material[0x07] = "ABS-M30I"
+    id_to_material[0x08] = "ULT9085"
+
+    @staticmethod
+    def all():
+        return list(set(CodeMaterial.id_to_material))
+
+    @staticmethod
+    def to_id(material):
+        return CodeMaterial.id_to_material.index(material)
+
+    @staticmethod
+    def from_id(id):
+        return CodeMaterial.id_to_material[id]
+
 class EnvelopeSize():
     id_to_envelopesize = ["invalid"] * 0x3
     id_to_envelopesize[0x1] = "small"
@@ -201,10 +225,16 @@ class SetupcodeEncoder():
 
         return serial_code
 
-    def encode(self, serial_number, system_type, envelope_size, build_speed, material, code_type, version, m_abs, m_ppsf, m_iso, key):
+    def encode(self, serial_number, system_type, envelope_size, build_speed, material, code_type, version, key):
         output_code = ["\x00"] * 19
 
         seed_code = self._randomize_code(int(serial_number))
+
+        material_id = self._material_id_from_names(material)
+        (m_abs, m_ppsf, m_iso, mat) = self._encode_material(material_id)
+        print("Debugging values:")
+        print("\tmaterial id: %d" % material_id)
+        print("\tabs: %d\n\tppsf: %d\n\tiso: %d\n\tmat: %d\n" % (m_abs, m_ppsf, m_iso, mat))
 
         if code_type == "configuration":
             # sn 1
@@ -237,7 +267,7 @@ class SetupcodeEncoder():
             # code type
             output_code[15] = self._encode_param(seed_code[15], CodeType.to_id(code_type) & 0x1F, 0x03)
             # material
-            output_code[16] = self._encode_param(seed_code[16], int(material) & 0x1F, 0x1F)
+            output_code[16] = self._encode_param(seed_code[16], int(mat) & 0x1F, 0x1F)
             # key
             #output_code[17]
             # sn4
@@ -258,11 +288,12 @@ class SetupcodeEncoder():
                 SystemType.to_id(system_type),
                 EnvelopeSize.to_id(envelope_size),
                 BuildSpeed.to_id(build_speed),
-                material,
+                int(material_id),
                 CodeType.to_id(code_type),
                 key)
 
-        print("".join(setup_code))
+        print("Generated code:")
+        print("\t" + "".join(setup_code))
 
     def decode(self, setup_code):
         try:
@@ -285,59 +316,98 @@ class SetupcodeEncoder():
         s.system_type = SystemType.from_id(int(code[1] & 0x0F))
         s.envelope_size = EnvelopeSize.from_id(code[2] & 0x03)
         s.build_speed = BuildSpeed.from_id(code[3] & 0x03)
-        s.mat_abs = str(code[5])
         s.checksum_1 = str(code[7])
         s.checksum_2 = str(code[8])
-        s.mat_ppsf = str(code[10])
-        s.mat_iso = str(code[11])
-        #s.material = str((self._get_material(code)) & 0x1f)
         s.version = str(code[13] & 0x03)
+        s.material = self._get_enabled_material(self._decode_material(code)) + "(" + str(self._decode_material(code)) + ")"
         s.code_type = CodeType.from_id(code[15] & 0x03)
-        s.material = str(code[16] & 0x1f)
-        #s.key = str(code[17])
         s.key = str(self.dictionary.index(setup_code[17]))
+
+        print("Debugging values:")
+        print("\tmaterial id: %d" % self._decode_material(code))
+        print("\tabs: %d\n\tppsf: %d\n\tiso: %d\n\tmat: %d\n" % (code[5], code[10], code[11], code[16]))
 
         return s
 
-    def _prepare_encode_dict(self, setupcode):
-        material = self._get_material(setupcode)
+    def _get_enabled_material(self, material):
+        supported_material = ""
+        counter = 0
+        i=1
 
-        self.encode_dict[7] = material & 0x01
-        self.encode_dict[7] |= material & 0x02
-        self.encode_dict[7] |= material & 0x04
-        self.encode_dict[7] |= material & 0x08
+        while i <= 256:
+            if material & i:
+                supported_material += CodeMaterial.from_id(counter) + " "
+            i *= 2
+            counter+=1
+
+        # Another version found:
+
+        #if material & 0x01 or material & 0x02 or material & 0x04:
+        #    mat_name = "ABS "
+        #if material & 0x08 or material & 0x10:
+        #    mat_name = "ABS-PC "
+        #if material & 0x20 or material & 0x40:
+        #    mat_name = "PC "
+        #if material & 0x80 or material & 0x100:
+        #    mat_name = "PPSF "
+        #if material & 0x200:
+        #    mat_name = "ISO "
+
+        return supported_material
+
+    def _material_id_from_names(self, material_names):
+        material_id = 0
+
+        for material_name in material_names:
+            material_id |= (1 << CodeMaterial.to_id(material_name))
+
+        return material_id
+
+    def _encode_material(self, material):
+        mat_abs = material & 0x01
+        mat_abs |= material & 0x02
+        mat_abs |= material & 0x04
+        mat_abs |= material & 0x08
         if material & 0x200:
-            self.encode_dict[7] |= 0x10
+            mat_abs |= 0x10
 
-        self.encode_dict[10] = material & 0x10
+        mat_ppsf = 0
+        if material & 0x10:
+            mat_ppsf |= 0x01
         if material & 0x20:
-            self.encode_dict[10] |= 0x02
+            mat_ppsf |= 0x02
         if material & 0x40:
-            self.encode_dict[10] |= 0x04
+            mat_ppsf |= 0x04
         if material & 0x80:
-            self.encode_dict[10] |= 0x08
+            mat_ppsf |= 0x08
         if material & 0x100:
-            self.encode_dict[10] |= 0x10
+            mat_ppsf |= 0x10
 
-        self.encode_dict[11] = (material & 0x400) & 0x1f
+        mat_iso = 0
+        if material & 0x400:
+            mat_iso |= 0x01
         if material & 0x800:
-            self.encode_dict[11] |= 0x02
+            mat_iso |= 0x02
         if material & 0x1000:
-            self.encode_dict[11] |= 0x04
+            mat_iso |= 0x04
         if material & 0x2000:
-            self.encode_dict[11] |= 0x08
+            mat_iso |= 0x08
         if material & 0x4000:
-            self.encode_dict[11] |= 0x10
+            mat_iso |= 0x10
 
-        self.encode_dict[14] = (material & 0x8000) & 0x1f
+        mat = 0
+        if material & 0x8000:
+            mat |= 0x01
         if material & 0x10000:
-            self.encode_dict[14] |= 0x02
+            mat |= 0x02
         if material & 0x20000:
-            self.encode_dict[14] |= 0x04
+            mat |= 0x04
         if material & 0x40000:
-            self.encode_dict[14] |= 0x08
+            mat |= 0x08
         if material & 0x80000:
-            self.encode_dict[14] |= 0x10
+            mat |= 0x10
+
+        return (mat_abs, mat_ppsf, mat_iso, mat)
 
     def _encode_param(self, code, value, notv):
         return self.dictionary[(~notv & self._dict_get_position(code) & 0x1F) | value]
@@ -346,14 +416,23 @@ class SetupcodeEncoder():
         # Get the shift base value
 
         # Algorithm 1
-        #shift_base = (self.build_speed_dict[build_speed] + self.material_dict[material%0x100000]) & 0xff
+        #shift_base = self.build_speed_dict[build_speed] & 0xff
+        #shift_base = (shift_base + self.material_dict[material%0x100000]) & 0xff
         #shift_base = (shift_base + self.envelope_size_dict[envelope_size]) & 0xff
         #shift_base = (shift_base + self.code_type_dict[code_type]) & 0xfF
         #shift_base = (shift_base + self.system_type_dict[system_type]) & 0xff
         #shift_base = (shift_base + self._unnormalize_sn(serial_number, code_type)) & 0xff
 
         # Algorithm 2
-        shift_base = self.code_type_dict[code_type] + self.system_type_dict[system_type]  + self._unnormalize_sn(serial_number, code_type)
+        #shift_base = self.code_type_dict[code_type] + self.system_type_dict[system_type]  + self._unnormalize_sn(serial_number, code_type)
+
+        # Algorithm 3
+        shift_base = self.build_speed_dict[build_speed] & 0xff
+        shift_base = (shift_base + self.material_dict[material & 0x1ff])
+        shift_base = (shift_base + self.envelope_size_dict[envelope_size]) & 0xff
+        shift_base = (shift_base + self.code_type_dict[code_type]) & 0xfF
+        shift_base = (shift_base + self.system_type_dict[system_type]) & 0xff
+        shift_base = (shift_base + self._unnormalize_sn(serial_number, code_type)) & 0xff
 
         if int(serial_number) & 1:
             shift_base += 4
@@ -419,17 +498,37 @@ class SetupcodeEncoder():
             checksum += self._dict_get_position(code[i])
         return checksum
 
-    def _get_material(self, code):
-        material = ((code[10] & 0x1) + (code[10] & 0x02) + (code[10] & 0x04) + (code[10] & 0x08) + (code[10] & 0x10)) << 0x04
-        material |= ((code[5] & 0x01) + (code[5] & 0x02) + (code[5] & 0x04) + (code[5] & 0x08))
-
+    def _decode_material(self, code):
+        material = ((code[5] & 0x01) + (code[5] & 0x02) + (code[5] & 0x04) + (code[5] & 0x08))
         if code[5] & 0x10:
             material |= 0x200
 
-        if (code[13] & 0x03) > 1:
-            print("please implement get_material for version > 1")
+        material |= ((code[10] & 0x1) + (code[10] & 0x02) + (code[10] & 0x04) + (code[10] & 0x08) + (code[10] & 0x10)) << 0x04
 
-        return material & 0x1f
+        if (code[13] & 0x03) > 1:
+            if code[11] & 0x01:
+                material |= 0x400
+            if code[11] & 0x02:
+                material |= 0x800
+            if code[11] & 0x04:
+                material |= 0x1000
+            if code[11] & 0x08:
+                material |= 0x2000
+            if code[11] & 0x10:
+                material |= 0x4000
+
+            if code[16] & 0x01:
+                material |= 0x8000
+            if code[16] & 0x02:
+                material |= 0x10000
+            if code[16] & 0x04:
+                material |= 0x20000
+            if code[16] & 0x08:
+                material |= 0x40000
+            if code[16] & 0x10:
+                material |= 0x80000
+
+        return material
 
     def _dict_get_position(self, value):
         try:

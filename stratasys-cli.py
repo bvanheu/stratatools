@@ -100,11 +100,8 @@ class StratasysConsoleApp():
         sc_encode.add_argument("-t", "--type", action="store", dest="code_type", choices=CodeType.all())
         sc_encode.add_argument("-l", "--envelope-size", action="store", dest="envelope_size", choices=EnvelopeSize.all())
         sc_encode.add_argument("-b", "--build-speed", action="store", dest="build_speed", choices=BuildSpeed.all())
-        sc_encode.add_argument("-m", "--material", action="store", dest="material")
+        sc_encode.add_argument("-m", "--material", action="store", dest="material", nargs="+", type=str, choices=CodeMaterial.all())
         sc_encode.add_argument("-v", "--version", action="store", dest="version")
-        sc_encode.add_argument("-a", "--abs", action="store", dest="m_abs", type=int, default=0)
-        sc_encode.add_argument("-f", "--ppsf", action="store", dest="m_ppsf", type=int, default=0)
-        sc_encode.add_argument("-i", "--iso", action="store", dest="m_iso", type=int, default=0)
         sc_encode.add_argument("-k", "--key", action="store", dest="key", type=int, default=0)
 
         setupcode_parser.set_defaults(func=self.command_setupcode)
@@ -205,7 +202,7 @@ class StratasysConsoleApp():
 
     def _setupcode_encode(self, args):
         encoder = SetupcodeEncoder()
-        encoder.encode(args.serial_number, args.system_type, args.envelope_size, args.build_speed, args.material, args.code_type, args.version, args.m_abs, args.m_ppsf, args.m_iso, args.key)
+        encoder.encode(args.serial_number, args.system_type, args.envelope_size, args.build_speed, args.material, args.code_type, args.version, args.key)
 
     def _setupcode_decode(self, args):
         encoder = SetupcodeEncoder()
@@ -219,9 +216,6 @@ class StratasysConsoleApp():
         print("\tSystem type:\t" + s.system_type)
         print("\tEnvelope size:\t" + s.envelope_size)
         print("\tBuild speed:\t" + s.build_speed)
-        print("\tABS:\t\t" + s.mat_abs)
-        print("\tPPSF:\t\t" + s.mat_ppsf)
-        print("\tISO:\t\t" + s.mat_iso)
         print("\tVersion:\t" + s.version)
         print("\tCode type:\t" + s.code_type)
         print("\tMaterial:\t" + s.material)
