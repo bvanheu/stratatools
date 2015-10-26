@@ -190,7 +190,8 @@ Raspberry pi
 Then you'll need to probe 2 kernel modules:
 
 ```
-$ sudo modprobe w1-wire w1-ds2433
+$ sudo modprobe w1-gpio gpiopin=4
+$ sudo modprobe w1-ds2433
 ```
 
 You should now see your eeprom appearing:
