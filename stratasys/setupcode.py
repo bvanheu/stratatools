@@ -65,7 +65,7 @@ class Setupcode():
         pass
 
 class CodeMaterial():
-    id_to_material = [""] * 9
+    id_to_material = ["unknown"] * 0x10
     id_to_material[0x00] = "ABS"
     id_to_material[0x01] = "PC-ABS"
     id_to_material[0x02] = "PC"
@@ -75,6 +75,9 @@ class CodeMaterial():
     id_to_material[0x06] = "ABSI"
     id_to_material[0x07] = "ABS-M30I"
     id_to_material[0x08] = "ULT9085"
+    id_to_material[0x09] = "ABS-ESD7"
+    id_to_material[0x0A] = "NYLON"
+    id_to_material[0x0B] = "RD1-RD2-RD3-RD4-RD5"
 
     @staticmethod
     def all():
