@@ -21,7 +21,7 @@ in hexadecimal form without the '0x' prefix. Note that the EEPROM uid use to end
 with "23".
 
 ```
-    $ ./stratasys-cli.py eeprom -t fox -e 4343434343434343 -i cartridge_dump.bin
+$ ./stratasys-cli.py eeprom -t fox -e 4343434343434343 -i cartridge_dump.bin
 ```
 
 The EEPROM uid use to end with '23'. You may have to reverse it. Say you have
@@ -38,7 +38,7 @@ By providing all required information, the software will provide a new valid eep
 that you can write on a cartridge.
 
 ```
-    $ ./stratasys-cli.py eeprom --machine-type fox --eeprom-uid 4343434343434343 --serial-number 1234.0 --material-name ABS --manufacturing-lot 1234 --manufacturing-date "2001-01-01 01:01:01" --use-date "2002-02-02 02:02:02" --initial-material 11.1 --current-material 22.2 --key-fragment 4141414141414141 --version 1 --signature STRATASYS -o random_file.bin
+$ ./stratasys-cli.py eeprom --machine-type fox --eeprom-uid 4343434343434343 --serial-number 1234.0 --material-name ABS --manufacturing-lot 1234 --manufacturing-date "2001-01-01 01:01:01" --use-date "2002-02-02 02:02:02" --initial-material 11.1 --current-material 22.2 --key-fragment 4141414141414141 --version 1 --signature STRATASYS -o random_file.bin
 ```
 
 All the dates are in international format: yyyy-mm-dd hh:mm:ss
@@ -57,11 +57,11 @@ if you want to make it 512 bytes long, the usual EEPROM size.
 If you want a list of all known material, simply run the following:
 
 ```
-    $ ./stratasys-cli.py material --list
-    0       ABS
-    1       ABS_RED
-    2       ABS_GRN
-    [...]
+$ ./stratasys-cli.py material --list
+0       ABS
+1       ABS_RED
+2       ABS_GRN
+[...]
 ```
 
 Use those names when creating a new cartridge.
@@ -91,7 +91,7 @@ unlock specific features of your printer.
 To decode a configuration code, simply run the following:
 
 ```
-    $ ./stratasys-cli.py setupcode -d AAAA-BBBB-CCCC-DDDD
+$ ./stratasys-cli.py setupcode -d AAAA-BBBB-CCCC-DDDD
 ```
 
 ### Create your own configuration code
@@ -101,8 +101,7 @@ You can create your own configuration code to enable specific features.
 For example:
 
 ```
-	$ ./stratasys-cli.py setupcode -e -n 1234 -s 900mc -t configuration -l large
-		-b 1x -m ABS-M30 NYLON PC-ABS -v 1
+$ ./stratasys-cli.py setupcode -e -n 1234 -s 900mc -t configuration -l large -b 1x -m ABS-M30 NYLON PC-ABS -v 1
 ```
 
 Will generate a `configuration` code for a printer type 900mc.
@@ -119,6 +118,12 @@ The available options:
 * -v : version of the code (put `1` unless you know what you're doing)
 * -k : specify the key that should be used to encode (OPTIONAL)
 
+For help on available values, you can run the following:
+
+```
+$ ./stratasys-cli.py setupcode --help
+```
+
 ## Interesting fork / rewrite
 
 * [slaytonrd/CartridgeWriter](https://github.com/slaytonrnd/CartridgeWriter) - rewritten in C# by slaytonrd
@@ -134,7 +139,7 @@ The available options:
 Use the following schematic as a reference:
 
 ```
-    Bus pirate
+Bus pirate
 
     grey    >---+
                 |
@@ -152,13 +157,13 @@ Use the scripts available in the `helper` directory.
 To read an eeprom:
 
 ```
-    $ ./bp_read.py /dev/ttyUSB0 eeprom.bin
+$ ./bp_read.py /dev/ttyUSB0 eeprom.bin
 ```
 
 To write an eeprom:
 
 ```
-    $ ./bp_write.py /dev/ttyUSB0 eeprom_new.bin
+$ ./bp_write.py /dev/ttyUSB0 eeprom_new.bin
 ```
 
 ### Raspberry Pi
@@ -170,7 +175,7 @@ To write an eeprom:
 Use the following schematic as a reference:
 
 ```
-    Raspberry pi
+Raspberry pi
 
      5V     >---+
                 |
@@ -185,34 +190,34 @@ Use the following schematic as a reference:
 Then you'll need to probe 2 kernel modules:
 
 ```
-    $ sudo modprobe w1-wire w1-ds2433
+$ sudo modprobe w1-wire w1-ds2433
 ```
 
 You should now see your eeprom appearing:
 
 ```
-    $ ls -l /sys/bus/w1/devices/w1_bus_master1
-    23-xxxxxxxxxxxx/
-    (...)
+$ ls -l /sys/bus/w1/devices/w1_bus_master1
+23-xxxxxxxxxxxx/
+[...]
 ```
 
 To print the eeprom uid:
 
 ```
-    $ xxd -p /sys/bus/w1/devices/w1_bus_master1/23-xxxxxxxxxxxx/id
-    23xxxxxxxxxxxx
+$ xxd -p /sys/bus/w1/devices/w1_bus_master1/23-xxxxxxxxxxxx/id
+23xxxxxxxxxxxx
 ```
 
 To read an eeprom:
 
 ```
-    $ cp /sys/bus/w1/devices/w1_bus_master1/23-xxxxxxxxxxxx/eeprom ~/eeprom.bin
+$ cp /sys/bus/w1/devices/w1_bus_master1/23-xxxxxxxxxxxx/eeprom ~/eeprom.bin
 ```
 
 To write an eeprom:
 
 ```
-    $ cp ~/eeprom_new.bin /sys/bus/w1/devices/w1_bus_master1/23-xxxxxxxxxxxx/eeprom
+$ cp ~/eeprom_new.bin /sys/bus/w1/devices/w1_bus_master1/23-xxxxxxxxxxxx/eeprom
 ```
 
 ## Acknowledgement
