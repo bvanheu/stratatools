@@ -112,6 +112,8 @@ class Manager:
         if self.checksum.checksum(cartridge_packed[0x58:0x60]) != struct.unpack("<H", str(cartridge_packed[0x62:0x64]))[0]:
             raise Exception("invalid current material quantity checksum")
 
+        cartridge_packed = buffer(cartridge_packed)
+
         # Serial number
         serial_number = struct.unpack_from("<d", cartridge_packed, 0x0)[0]
         # Material
