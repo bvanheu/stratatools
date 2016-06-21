@@ -17,7 +17,7 @@ You can use this code to 'refill' an EEPROM or build a cartridge EEPROM image fr
 ### Print information about a cartridge
 
 You have to provide the machine type (fox, prodigy, quantum, etc.) and the EEPROM uid,
-in hexadecimal form without the '0x' prefix. Note that the EEPROM uid use to ends
+in hexadecimal form without the '0x' prefix. Note that the EEPROM uid to use ends
 with "23" (which is the family code for the EEPROM device).
 
 ```
