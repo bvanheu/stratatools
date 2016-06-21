@@ -1,9 +1,9 @@
 Stratasys
 ---------
 
-This is a software to read and write data on a Stratasys cartridge memory.
+This is software to read and write data on a Stratasys cartridge EEPROM.
 
-You may want to use it so you can refill or build your own cartridge.
+You can use this code to 'refill' an EEPROM or build a cartridge EEPROM image from scratch.
 
 ## Installation
 
@@ -16,16 +16,16 @@ You may want to use it so you can refill or build your own cartridge.
 
 ### Print information about a cartridge
 
-You have to provide the machine type (fox, prodigy or quantum) and the EEPROM uid,
-in hexadecimal form without the '0x' prefix. Note that the EEPROM uid use to end
-with "23".
+You have to provide the machine type (fox, prodigy, quantum, etc.) and the EEPROM uid,
+in hexadecimal form without the '0x' prefix. Note that the EEPROM uid use to ends
+with "23" (which is the family code for the EEPROM device).
 
 ```
-$ ./stratasys-cli.py eeprom -t fox -e 4343434343434343 -i cartridge_dump.bin
+$ ./stratasys-cli.py eeprom -t fox -e 6b0000014d476223 -i cartridge_dump.bin
 ```
 
-The EEPROM uid use to end with '23'. You may have to reverse it. Say you have
-"233a38b1020000c0", you should reverse it to be "c0000002b1383a23".
+The EEPROM uid should end with '23'. You may have to reverse the byte order. Say you have
+"233a38b1020000c0" - you should reverse it to be "c0000002b1383a23".
 
 If you provide the '-r' option, arguments to pass to stratasys-cli will be printed
 to help you recreate the cartridge.
@@ -34,11 +34,11 @@ The input file must be a binary file.
 
 ### Create your own cartridge
 
-By providing all required information, the software will provide a new valid eeprom
-that you can write on a cartridge.
+By providing all the required information, this software will provide a new valid EEPROM image
+that you can write to a cartridge.
 
 ```
-$ ./stratasys-cli.py eeprom --machine-type fox --eeprom-uid 4343434343434343 --serial-number 1234.0 --material-name ABS --manufacturing-lot 1234 --manufacturing-date "2001-01-01 01:01:01" --use-date "2002-02-02 02:02:02" --initial-material 11.1 --current-material 22.2 --key-fragment 4141414141414141 --version 1 --signature STRATASYS -o random_file.bin
+$ ./stratasys-cli.py eeprom --machine-type fox --eeprom-uid 6b0000014d476223 --serial-number 1234.0 --material-name ABS --manufacturing-lot 1234 --manufacturing-date "2001-01-01 01:01:01" --use-date "2002-02-02 02:02:02" --initial-material 11.1 --current-material 22.2 --key-fragment 4141414141414141 --version 1 --signature STRATASYS -o random_file.bin
 ```
 
 All the dates are in international format: yyyy-mm-dd hh:mm:ss
