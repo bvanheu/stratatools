@@ -8,6 +8,7 @@ import argparse
 import struct
 import sys
 from datetime import datetime
+import binascii
 
 from stratasys import cartridge
 from stratasys import material
@@ -62,6 +63,7 @@ class StratasysConsoleApp():
         output_group.add_argument("-s", "--serial-number", action="store", type=float, dest="serial_number", help="Format: [0-9]{1,}.0, example: 1.0 - 123456789.0 - 413203.0")
         output_group.add_argument("-v", "--version", action="store", type=int, dest="version", help="Format: [0-9]{1}, examples: 0 - 1")
         output_group.add_argument("-g", "--signature", action="store", type=str, default="STRATASYS", dest="signature", help="Format: [a-z]{0,9}, examples: STRATASYS - MYOWNSIG - EMPTY")
+        output_group.add_argument("-a", "--use-ascii", action="store_true", dest="use_ascii", help="Use ASCII format for output file")
 
         eeprom_parser.set_defaults(func=self.command_eeprom)
 
@@ -110,6 +112,69 @@ class StratasysConsoleApp():
         if args.list:
             self._material_list(args)
 
+    def _make_info(self, args, cartridge, machine_number):
+        l = []
+        if args.input_file != None:
+            l.append("Cartridge - '" + args.input_file + "'")
+            l.append("-"*79)
+        l.append("Serial number\t\t" + str(cartridge.serial_number))
+        material_id = material.get_id_from_name(cartridge.material_name)
+        l.append("Material\t\t" + cartridge.material_name + " (" + str(material_id) + " - " + hex(material_id) +")")
+        l.append("Manufacturing lot\t" + str(cartridge.manufacturing_lot))
+        l.append("Manufacturing date\t" + str(cartridge.manufacturing_date))
+        l.append("Last use date\t\t" + str(cartridge.use_date))
+        l.append("Initial quantity\t" + str(cartridge.initial_material_quantity))
+        l.append("Current quantity\t" + str(cartridge.current_material_quantity))
+        l.append("Key fragment\t\t" + str(cartridge.key_fragment))
+        l.append("Version\t\t\t" + str(cartridge.version))
+        l.append("Signature\t\t" + str(cartridge.signature))
+        l.append("")
+        l.append("Machine type:\t\t" + str(args.machine_type) + " " + str(machine_number))
+        l.append("EEPROM uid:\t\t" + str(args.eeprom_uid))
+        return l
+
+    def _make_recreate(self, args, cartridge):
+        l = []
+        l.append("To recreate this cartridge:")
+        l.append("stratasys-cli.py eeprom")
+        l.append(" --output-file XXX_REPLACE_ME_XXX")
+        if args.use_ascii == True: l.append(" --use-ascii")
+        l.append(" --machine-type " + str(args.machine_type))
+        l.append(" --eeprom-uid " + str(args.eeprom_uid))
+        l.append(" --serial-number " + str(cartridge.serial_number))
+        l.append(" --material-name " + str(cartridge.material_name))
+        l.append(" --manufacturing-lot " + str(cartridge.manufacturing_lot))
+        l.append(" --manufacturing-date \"" + str(cartridge.manufacturing_date) + "\"")
+        l.append(" --use-date \"" + str(cartridge.use_date) + "\"")
+        l.append(" --initial-material " + str(cartridge.initial_material_quantity))
+        l.append(" --current-material " + str(cartridge.current_material_quantity))
+        l.append(" --key-fragment " + str(cartridge.key_fragment))
+        l.append(" --version " + str(cartridge.version))
+        l.append(" --signature " + str(cartridge.signature))
+        return l
+
+    def _make_ascii(self, args, cartridge, eeprom_bin, machine_number):
+        s = ''
+
+        # add comments
+        lines = []
+        lines = self._make_info(args, cartridge, machine_number)
+        if args.recreate_input_file:
+            lines.append('')
+            lines.extend(self._make_recreate(args, cartridge))
+        lines.append('')
+        for l in lines: s += '# ' + l + '\n'
+
+        # turn to binary into 32 chars wide ascii lines
+        eeprom_ascii = binascii.b2a_hex(eeprom_bin)
+        n = len(eeprom_ascii)
+        for i in range(0, n, 32):
+            nn = 32
+            if (n - i) < 32: nn = n - i
+            s += eeprom_ascii[i : i + nn] + '\n'
+
+        return s
+
     def _eeprom_create(self, args):
         cart = cartridge.Cartridge(args.serial_number,
                 args.material_name,
@@ -127,9 +192,14 @@ class StratasysConsoleApp():
         m = manager.Manager(crypto.Desx_Crypto(), checksum.Crc16_Checksum())
         eeprom = m.encode(machine_number, args.eeprom_uid, cart)
 
-        f = open(args.output_file, "wb")
+        mode = "w"
+        if args.use_ascii == True: eeprom = self._make_ascii(args, cart, eeprom, machine_number)
+        else: mode += "b"
+
+        f = open(args.output_file, mode)
         f.write(eeprom)
         f.close()
+        return
 
     def _eeprom_info(self, args):
         f = open(args.input_file, "rb")
@@ -140,38 +210,14 @@ class StratasysConsoleApp():
         machine_number = machine.get_number_from_type(args.machine_type)
         cartridge = m.decode(machine_number, args.eeprom_uid, cartridge_crypted)
 
-        print("Cartridge - '" + args.input_file + "'")
-        print("-"*79)
-        print("Serial number\t\t" + str(cartridge.serial_number))
-        material_id = material.get_id_from_name(cartridge.material_name)
-        print("Material\t\t" + cartridge.material_name + " (" + str(material_id) + " - " + hex(material_id) +")")
-        print("Manufacturing lot\t" + str(cartridge.manufacturing_lot))
-        print("Manufacturing date\t" + str(cartridge.manufacturing_date))
-        print("Last use date\t\t" + str(cartridge.use_date))
-        print("Initial quantity\t" + str(cartridge.initial_material_quantity))
-        print("Current quantity\t" + str(cartridge.current_material_quantity))
-        print("Key fragment\t\t" + str(cartridge.key_fragment))
-        print("Version\t\t\t" + str(cartridge.version))
-        print("Signature\t\t" + str(cartridge.signature))
-        print("")
-        print("Machine type:\t\t" + str(args.machine_type) + " " + str(machine_number))
-        print("EEPROM uid:\t\t" + str(args.eeprom_uid))
-
+        lines = self._make_info(args, cartridge, machine_number)
         if args.recreate_input_file:
-            print("\nTo recreate this cartridge:")
-            print("--output-file XXX_REPLACE_ME_XXX " \
-                    + "--machine-type " + str(args.machine_type) \
-                    + " --eeprom-uid " + str(args.eeprom_uid) \
-                    + " --serial-number " + str(cartridge.serial_number) \
-                    + " --material-name " + str(cartridge.material_name) \
-                    + " --manufacturing-lot " + str(cartridge.manufacturing_lot) \
-                    + " --manufacturing-date \"" + str(cartridge.manufacturing_date) + "\"" \
-                    + " --use-date \"" + str(cartridge.use_date) + "\"" \
-                    + " --initial-material " + str(cartridge.initial_material_quantity) \
-                    + " --current-material " + str(cartridge.current_material_quantity) \
-                    + " --key-fragment " + str(cartridge.key_fragment) \
-                    + " --version " + str(cartridge.version) \
-                    + " --signature " + str(cartridge.signature))
+            lines.append('')
+            lines.extend(self._make_recreate(args, cartridge))
+        lines.append('')
+        for l in lines: print(l)
+
+        return
 
     def _material_list(self, args):
         for k in range(len(material.id_to_name)):
