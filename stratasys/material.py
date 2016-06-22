@@ -10,7 +10,7 @@
 # material and code in this project, 0x0F has the identifier ABS_S, while 0xA0 is given the identifier ABS_S_2.
 #
 
-id_to_name = ["unknown"] * 0x200
+id_to_name = ["unknown"] * 0x1000
 id_to_name[0x00] = "ABS"
 id_to_name[0x01] = "ABS_RED"
 id_to_name[0x02] = "ABS_GRN"
