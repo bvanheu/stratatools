@@ -57,7 +57,7 @@ class StratasysConsoleApp():
         # Information about a cartridge
         #
         info_parser = subparsers.add_parser("info", help="Print information about a cartridge")
-        info_parser.add_argument("-t", "--machine-type", action="store", choices=["fox", "fox2", "prodigy", "quantum"], help="Machine type (Fox T-class, Prodigy P-class, Quantum)", required=True)
+        info_parser.add_argument("-t", "--machine-type", action="store", choices=["fox", "fox2", "prodigy", "quantum", "uprint", "uprintse"], help="Machine type (Fox T-class, Prodigy P-class, Quantum)", required=True)
         info_parser.add_argument("-e", "--eeprom-uid", action="store", dest="eeprom_uid", help="Format: [a-f0-9]{14}23, example: 11010a01ba325d23", required=True)
         info_parser.add_argument("-i", "--input-file", action="store", dest="input_file", required=True)
         info_parser.add_argument("-r", "--recreate-input-file", action="store_true", help="Print information on how to recreate the cartridge")
@@ -68,7 +68,7 @@ class StratasysConsoleApp():
         #
         refill_parser = subparsers.add_parser("refill", help="Print information about a cartridge")
         # Mandatory option
-        refill_parser.add_argument("-t", "--machine-type", action="store", choices=["fox", "fox2", "prodigy", "quantum"], help="Machine type (Fox T-class, Prodigy P-class, Quantum)", required=True)
+        refill_parser.add_argument("-t", "--machine-type", action="store", choices=["fox", "fox2", "prodigy", "quantum", "uprint", "uprintse"], help="Machine type (Fox T-class, Prodigy P-class, Quantum)", required=True)
         refill_parser.add_argument("-e", "--eeprom-uid", action="store", dest="eeprom_uid", help="Format: [a-f0-9]{14}23, example: 11010a01ba325d23", required=True)
         refill_parser.add_argument("-i", "--input-file", action="store", type=str, dest="input_file", required=True)
         refill_parser.add_argument("-o", "--output-file", action="store", type=str, dest="output_file", required=True)
