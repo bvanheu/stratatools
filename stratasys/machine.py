@@ -11,7 +11,7 @@ type_to_number = {
     "ktype": "6B2A268B5ED3374A",
     "prodigy": "5394D7657CED641D",
     "quantum": "76C454D532E610F7",
-    "uprint/SE": "F3A91DBE6B0B2255",
+    "uprint": "F3A91DBE6B0B2255",
 }
 
 number_to_type = {}
