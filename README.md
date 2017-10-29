@@ -30,7 +30,14 @@ The EEPROM uid should end with '23'. You may have to reverse the byte order. Say
 If you provide the '-r' option, arguments to pass to stratasys-cli will be printed
 to help you recreate the cartridge.
 
-The input file must be a binary file.
+If you provide the '-D' option, the input file will be interpreted as an ASCII formatted file,
+containing lines of the form produced by the printers 'er' command, namely:
+
+```
+000096: 00 00 00 00 00 00 00 00 53 54 52 41 54 41 53 59   ........STRATASY
+```
+
+Otherwise, the input file must be a binary file.
 
 ### Create your own cartridge
 
@@ -50,7 +57,10 @@ The EEPROM uid use to end with '23'. You may have to reverse it. Say you have
 `233a38b1020000c0`, you should reverse it to be `c0000002b1383a23`.
 
 The generated file will be 113 bytes in size. You can complete the file with zeroes
-if you want to make it 512 bytes long, the usual EEPROM size.
+if you want to make it 512 bytes long, the usual EEPROM size.a
+
+Supplying the '-D' option will result in an output file containing a double-quoted string
+of space delimited bytes, expressed in hexadecimal. Otherwise, the output will be a binary file.
 
 ### List supported material
 
