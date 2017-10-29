@@ -16,11 +16,13 @@ from stratasys import machine
 from stratasys import manager
 from stratasys import crypto
 from stratasys import checksum
+from stratasys.formatter import DiagnosticPort_Formatter
 from stratasys.setupcode import *
 
 class StratasysConsoleApp():
     def __init__(self):
         self.argparse = self.build_argparser()
+        self.diag_formatter = DiagnosticPort_Formatter()
 
     def run(self):
         args = self.argparse.parse_args()
@@ -41,6 +43,7 @@ class StratasysConsoleApp():
         # Options used for both reading / writing eeprom
         eeprom_parser.add_argument("-t", "--machine-type", action="store", choices=["fox", "fox2", "prodigy", "quantum", "uprint", "uprintse"], help="Machine type (Fox T-class, Prodigy P-class, Quantum, uPrint, uPrint SE)", required=True)
         eeprom_parser.add_argument("-e", "--eeprom-uid", action="store", dest="eeprom_uid", required=True, help="Format: [a-f0-9]{14}23, example: 11010a01ba325d23")
+        eeprom_parser.add_argument("-D", "--diag-format", action="store_true", dest="diag_format", help="Read input/produce output in the ASCII format used over the printer diagnostic port")
 
         # Input or output options
         io_group = eeprom_parser.add_mutually_exclusive_group(required=True)
@@ -196,15 +199,19 @@ class StratasysConsoleApp():
         if args.use_ascii == True: eeprom = self._make_ascii(args, cart, eeprom, machine_number)
         else: mode += "b"
 
-        f = open(args.output_file, mode)
-        f.write(eeprom)
-        f.close()
+        with open(args.output_file, mode) as f:
+            if(args.diag_format and (not args.use_ascii)):
+                f.write(self.diag_formatter.to_destination(eeprom))
+            else:
+                f.write(eeprom)
         return
 
     def _eeprom_info(self, args):
-        f = open(args.input_file, "rb")
-        cartridge_crypted = bytearray(f.read())
-        f.close()
+        with open(args.input_file, "rb") as f:
+            if(args.diag_format):
+                cartridge_crypted = bytearray(self.diag_formatter.from_source(f.read()))
+            else:
+                cartridge_crypted = bytearray(f.read())
 
         m = manager.Manager(crypto.Desx_Crypto(), checksum.Crc16_Checksum())
         machine_number = machine.get_number_from_type(args.machine_type)

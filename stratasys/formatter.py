@@ -41,6 +41,6 @@ class DiagnosticPort_Formatter(Formatter):
         formatted = "\""
 
         for b in data:
-            formatted += binascii.hexlify(b) + " "
+            formatted += binascii.hexlify(chr(b)) + " "
 
         return formatted[0:-1] + "\""
