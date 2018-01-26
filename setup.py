@@ -19,7 +19,8 @@ setup(
     packages=find_packages(exclude=['contrib', 'docs', 'tests']),
     install_requires=[
         'pycrypto',
-        'pyserial'
+        'pyserial',
+        'protobuf'
     ],
     entry_points={
         'console_scripts': [

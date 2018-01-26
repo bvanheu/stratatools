@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+package stratatools;
+
+import "google/protobuf/timestamp.proto";
+
+message Cartridge {
+  // Serial number
+  float serial_number = 1;
+  // Material (see material.py)
+  string material_name = 2;
+  // Manufacturing lot
+  string manufacturing_lot = 3;
+  // Manufacturing date
+  google.protobuf.Timestamp manufacturing_date = 4;
+  // Last use date
+  google.protobuf.Timestamp last_use_date = 5;
+  // Initial material quantity, in cubic feet
+  float initial_material_quantity = 6;
+  // Remaining material quantity, in cubic feet
+  float current_material_quantity = 7;
+  // Key used to encrypt / decrypt
+  bytes key_fragment = 8;
+  // Version
+  uint32 version = 9;
+  // Signature
+  string signature = 10;
+}
+
