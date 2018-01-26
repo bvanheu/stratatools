@@ -10,16 +10,16 @@ import sys
 from datetime import datetime
 import binascii
 
-from stratasys import cartridge
-from stratasys import material
-from stratasys import machine
-from stratasys import manager
-from stratasys import crypto
-from stratasys import checksum
-from stratasys.formatter import DiagnosticPort_Formatter
-from stratasys.setupcode import *
+from stratatools import cartridge
+from stratatools import material
+from stratatools import machine
+from stratatools import manager
+from stratatools import crypto
+from stratatools import checksum
+from stratatools.formatter import DiagnosticPort_Formatter
+from stratatools.setupcode import *
 
-class StratasysConsoleApp():
+class StratatoolsConsoleApp():
     def __init__(self):
         self.argparse = self.build_argparser()
         self.diag_formatter = DiagnosticPort_Formatter()
@@ -56,7 +56,7 @@ class StratasysConsoleApp():
         # Options for EEPROM creation
         io_group.add_argument("-o", "--output-file", action="store", type=str, dest="output_file")
         output_group = eeprom_parser.add_argument_group(title="Output options", description="Option for eeprom creation")
-        output_group.add_argument("-m", "--material-name", action="store", type=str, dest="material_name", help="Run \"stratasys-cli.py material --list\" for a list of known material")
+        output_group.add_argument("-m", "--material-name", action="store", type=str, dest="material_name", help="Run \"stratatools-cli.py material --list\" for a list of known material")
         output_group.add_argument("-l", "--manufacturing-lot", action="store", type=str, dest="manufacturing_lot", help="Format [0-9]{4}, examples: 1234 - 0000 - 9999")
         output_group.add_argument("-d", "--manufacturing-date", action="store", type=self.parse_date, dest="manufacturing_date", help="Format \"yyyy-mm-dd hh:mm:ss\", examples: \"2014-01-01 13:14:15\"")
         output_group.add_argument("-u", "--use-date", action="store", type=self.parse_date, dest="use_date", help="Format \"yyyy-mm-dd hh:mm:ss\", examples: \"2014-01-01 13:14:15\"")
@@ -254,7 +254,7 @@ class StratasysConsoleApp():
         print("\tKey:\t\t" + s.key)
 
 if __name__ == "__main__":
-    app = StratasysConsoleApp()
+    app = StratatoolsConsoleApp()
     try:
         app.run()
     except KeyboardInterrupt:
