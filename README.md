@@ -7,10 +7,20 @@ You can use this code to 'refill' an EEPROM or build a cartridge EEPROM image fr
 
 ## Installation
 
-### Dependencies
+This tool requires Python 2.7.
 
-- python 2.7
+You can simply installs Stratatools using pip:
+
+```
+$ python2 ./setup.py build
+$ python2 ./setup.py install
+```
+
+It will automagically pull the dependency:
+
 - [pycrypto](https://www.dlitz.net/software/pycrypto/)
+- [pyserial](https://github.com/pyserial/pyserial/)
+
 
 ## Cartridge Usage
 
@@ -21,13 +31,13 @@ in hexadecimal form without the '0x' prefix. Note that the EEPROM uid to use end
 with "23" (which is the family code for the EEPROM device).
 
 ```
-$ ./stratatools-cli.py eeprom -t fox -e 6b0000014d476223 -i cartridge_dump.bin
+$ stratatools eeprom -t fox -e 6b0000014d476223 -i cartridge_dump.bin
 ```
 
 The EEPROM uid should end with '23'. You may have to reverse the byte order. Say you have
 "233a38b1020000c0" - you should reverse it to be "c0000002b1383a23".
 
-If you provide the '-r' option, arguments to pass to stratatools-cli will be printed
+If you provide the '-r' option, arguments to pass to stratatools will be printed
 to help you recreate the cartridge.
 
 If you provide the '-D' option, the input file will be interpreted as an ASCII formatted file,
@@ -45,7 +55,7 @@ By providing all the required information, this software will provide a new vali
 that you can write to a cartridge.
 
 ```
-$ ./stratatools-cli.py eeprom --machine-type fox --eeprom-uid 6b0000014d476223 --serial-number 1234.0 --material-name ABS --manufacturing-lot 1234 --manufacturing-date "2001-01-01 01:01:01" --use-date "2002-02-02 02:02:02" --initial-material 11.1 --current-material 22.2 --key-fragment 4141414141414141 --version 1 --signature STRATASYS -o random_file.bin
+$ stratatools eeprom --machine-type fox --eeprom-uid 6b0000014d476223 --serial-number 1234.0 --material-name ABS --manufacturing-lot 1234 --manufacturing-date "2001-01-01 01:01:01" --use-date "2002-02-02 02:02:02" --initial-material 11.1 --current-material 22.2 --key-fragment 4141414141414141 --version 1 --signature STRATASYS -o random_file.bin
 ```
 
 All the dates are in international format: yyyy-mm-dd hh:mm:ss
@@ -67,7 +77,7 @@ of space delimited bytes, expressed in hexadecimal. Otherwise, the output will b
 If you want a list of all known material, simply run the following:
 
 ```
-$ ./stratatools-cli.py material --list
+$ stratatools material --list
 0       ABS
 1       ABS_RED
 2       ABS_GRN
@@ -101,7 +111,7 @@ unlock specific features of your printer.
 To decode a configuration code, simply run the following:
 
 ```
-$ ./stratatools-cli.py setupcode -d AAAA-BBBB-CCCC-DDDD
+$ stratatools setupcode -d AAAA-BBBB-CCCC-DDDD
 ```
 
 ### Create your own configuration code
@@ -111,7 +121,7 @@ You can create your own configuration code to enable specific features.
 For example:
 
 ```
-$ ./stratatools-cli.py setupcode -e -n 1234 -s 900mc -t configuration -l large -b 1x -m ABS-M30 NYLON PC-ABS -v 1
+$ stratatools setupcode -e -n 1234 -s 900mc -t configuration -l large -b 1x -m ABS-M30 NYLON PC-ABS -v 1
 ```
 
 Will generate a `configuration` code for a printer type 900mc.
@@ -131,7 +141,7 @@ The available options:
 For help on available values, you can run the following:
 
 ```
-$ ./stratatools-cli.py setupcode --help
+$ stratatools setupcode --help
 ```
 
 ## Interesting fork / rewrite
@@ -167,13 +177,13 @@ Use the scripts available in the `helper` directory.
 To read an eeprom:
 
 ```
-$ ./bp_read.py /dev/ttyUSB0 eeprom.bin
+$ stratatools_bp_read /dev/ttyUSB0 eeprom.bin
 ```
 
 To write an eeprom:
 
 ```
-$ ./bp_write.py /dev/ttyUSB0 eeprom_new.bin
+$ stratatools_bp_write /dev/ttyUSB0 eeprom_new.bin
 ```
 
 ### Raspberry Pi

@@ -117,7 +117,7 @@ class BusPirate:
 
         return data
 
-if __name__ == "__main__":
+def main():
     if len(sys.argv) != 3:
         print("usage: bp_write.py <serial port> <eeprom bin>")
         sys.exit(1)
@@ -169,3 +169,6 @@ if __name__ == "__main__":
     print("Done!")
 
     sys.exit(0)
+
+if __name__ == "__main__":
+    main()

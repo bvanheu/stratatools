@@ -253,10 +253,13 @@ class StratatoolsConsoleApp():
         print("\tMaterial:\t" + s.material)
         print("\tKey:\t\t" + s.key)
 
-if __name__ == "__main__":
+def main():
     app = StratatoolsConsoleApp()
     try:
         app.run()
     except KeyboardInterrupt:
         print("quitting...")
     sys.exit(0)
+
+if __name__ == "__main__":
+    main()
