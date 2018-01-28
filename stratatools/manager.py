@@ -4,8 +4,9 @@
 
 import datetime
 import struct
+import time
 
-import cartridge
+import cartridge_pb2
 import material
 
 #
@@ -65,25 +66,27 @@ class Manager:
         # material id
         struct.pack_into("<d", eeprom, 0x08, material.get_id_from_name(cartridge.material_name))
         # manufacturing lot
-        struct.pack_into("<20s", eeprom, 0x10, cartridge.manufacturing_lot)
+        struct.pack_into("<20s", eeprom, 0x10, str(cartridge.manufacturing_lot))
         # version (not sure)
         struct.pack_into("<H", eeprom, 0x24, cartridge.version)
         # manufacturing date
+        mfg_dt = cartridge.manufacturing_date.ToDatetime()
         struct.pack_into("<HBBBBH", eeprom, 0x28,
-                cartridge.manufacturing_date.year - 1900,
-                cartridge.manufacturing_date.month,
-                cartridge.manufacturing_date.day,
-                cartridge.manufacturing_date.hour,
-                cartridge.manufacturing_date.minute,
-                cartridge.manufacturing_date.second)
+                mfg_dt.year - 1900,
+                mfg_dt.month,
+                mfg_dt.day,
+                mfg_dt.hour,
+                mfg_dt.minute,
+                mfg_dt.second)
         # last use date
+        lu_dt = cartridge.last_use_date.ToDatetime()
         struct.pack_into("<HBBBBH", eeprom, 0x30,
-                cartridge.use_date.year - 1900,
-                cartridge.use_date.month,
-                cartridge.use_date.day,
-                cartridge.use_date.hour,
-                cartridge.use_date.minute,
-                cartridge.use_date.second)
+                lu_dt.year - 1900,
+                lu_dt.month,
+                lu_dt.day,
+                lu_dt.hour,
+                lu_dt.minute,
+                lu_dt.second)
         struct.pack_into("<d", eeprom, 0x38, cartridge.initial_material_quantity)
         # plaintext checksum
         struct.pack_into("<H", eeprom, 0x40, self.checksum.checksum(eeprom[0x00:0x40]))
@@ -96,7 +99,7 @@ class Manager:
         # Checksum current material quantity
         struct.pack_into("<H", eeprom, 0x62, self.checksum.checksum(eeprom[0x58:0x60]))
         # signature (not sure, not usedu)
-        struct.pack_into("<9s", eeprom, 0x68, cartridge.signature)
+        struct.pack_into("<9s", eeprom, 0x68, str(cartridge.signature))
 
         return eeprom
 
@@ -157,7 +160,19 @@ class Manager:
         # Signature
         signature = struct.unpack_from("<9s", cartridge_packed, 0x68)[0]
 
-        return cartridge.Cartridge(serial_number, material_name, manufacturing_lot, mfg_datetime, use_datetime, initial_material_quantity, current_material_quantity, key_fragment, version, signature)
+        c = cartridge_pb2.Cartridge()
+        c.serial_number = serial_number
+        c.material_name = material_name
+        c.manufacturing_lot = manufacturing_lot
+        c.manufacturing_date.FromDatetime(mfg_datetime)
+        c.last_use_date.FromDatetime(use_datetime)
+        c.initial_material_quantity = initial_material_quantity
+        c.current_material_quantity = current_material_quantity
+        c.key_fragment = key_fragment
+        c.version = version
+        c.signature = signature
+
+        return c
 
     #
     # Encrypt a packed cartridge into a crypted cartridge
