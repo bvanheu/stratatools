@@ -73,25 +73,23 @@ class StratatoolsConsoleApp():
         eeprom_create.add_argument('output_file', nargs='?', type=argparse.FileType('w'), default=sys.stdout)
         eeprom_create.set_defaults(func=self.command_eeprom_create)
 
-        #
-        # Setup-codes options
-        #
-        setupcode_parser = subparsers.add_parser("setupcode", help="Create/parse a Stratasys setup code")
-        sc_group = setupcode_parser.add_mutually_exclusive_group(required=True)
-        sc_group.add_argument("-d", "--decode", action="store", dest="setup_code", help="Decode a provided code")
-        sc_group.add_argument("-e", "--encode", action="store_true", dest="encode", help="")
+        # SetupCode create options
+        setupcode_create = subparsers.add_parser("setupcode_create", help="SetupCode - create a setup code from arguments")
+        setupcode_create.add_argument("-n", "--serial-number", action="store", dest="serial_number")
+        setupcode_create.add_argument("-s", "--system-type", action="store", dest="system_type", choices=SystemType.all())
+        setupcode_create.add_argument("-t", "--type", action="store", dest="code_type", choices=CodeType.all())
+        setupcode_create.add_argument("-l", "--envelope-size", action="store", dest="envelope_size", choices=EnvelopeSize.all())
+        setupcode_create.add_argument("-b", "--build-speed", action="store", dest="build_speed", choices=BuildSpeed.all())
+        setupcode_create.add_argument("-m", "--material", action="store", dest="material", nargs="+", type=str, choices=CodeMaterial.all())
+        setupcode_create.add_argument("-v", "--version", action="store", dest="version")
+        setupcode_create.add_argument("-k", "--key", action="store", dest="key", type=int, default=0)
+        setupcode_create.set_defaults(func=self.command_setupcode_create)
 
-        sc_encode = setupcode_parser.add_argument_group(title="Encode options", description="Options for setup code encoding")
-        sc_encode.add_argument("-n", "--serial-number", action="store", dest="serial_number")
-        sc_encode.add_argument("-s", "--system-type", action="store", dest="system_type", choices=SystemType.all())
-        sc_encode.add_argument("-t", "--type", action="store", dest="code_type", choices=CodeType.all())
-        sc_encode.add_argument("-l", "--envelope-size", action="store", dest="envelope_size", choices=EnvelopeSize.all())
-        sc_encode.add_argument("-b", "--build-speed", action="store", dest="build_speed", choices=BuildSpeed.all())
-        sc_encode.add_argument("-m", "--material", action="store", dest="material", nargs="+", type=str, choices=CodeMaterial.all())
-        sc_encode.add_argument("-v", "--version", action="store", dest="version")
-        sc_encode.add_argument("-k", "--key", action="store", dest="key", type=int, default=0)
+        # SetupCode decode options
+        setupcode_decode = subparsers.add_parser("setupcode_decode", help="SetupCode - print information about a setup code")
+        setupcode_decode.add_argument("setup_code", action="store")
+        setupcode_decode.set_defaults(func=self.command_setupcode_decode)
 
-        setupcode_parser.set_defaults(func=self.command_setupcode)
 
         #
         # Material options
@@ -190,11 +188,13 @@ class StratatoolsConsoleApp():
             if m != "unknown":
                 print(str(k) + "\t" + m)
 
-    def _setupcode_encode(self, args):
+    def command_setupcode_create(self, args):
         encoder = SetupcodeEncoder()
-        encoder.encode(args.serial_number, args.system_type, args.envelope_size, args.build_speed, args.material, args.code_type, args.version, args.key)
+        s = encoder.encode(args.serial_number, args.system_type, args.envelope_size, args.build_speed, args.material, args.code_type, args.version, args.key)
 
-    def _setupcode_decode(self, args):
+        print(s)
+
+    def command_setupcode_decode(self, args):
         encoder = SetupcodeEncoder()
         s = encoder.decode(args.setup_code)
 

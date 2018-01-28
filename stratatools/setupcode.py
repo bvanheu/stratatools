@@ -212,9 +212,6 @@ class SetupcodeEncoder():
 
         material_id = self._material_id_from_names(material)
         (m_abs, m_ppsf, m_iso, mat) = self._encode_material(material_id)
-        print("Debugging values:")
-        print("\tmaterial id: %d" % material_id)
-        print("\tabs: %d\n\tppsf: %d\n\tiso: %d\n\tmat: %d\n" % (m_abs, m_ppsf, m_iso, mat))
 
         if code_type == "configuration":
             # sn 1
@@ -272,8 +269,7 @@ class SetupcodeEncoder():
                 CodeType.to_id(code_type),
                 key)
 
-        print("Generated code:")
-        print("\t" + "".join(setup_code))
+        return "".join(setup_code)
 
     def decode(self, setup_code):
         try:
@@ -302,10 +298,6 @@ class SetupcodeEncoder():
         s.material = self._get_enabled_material(self._decode_material(code)) + "(" + str(self._decode_material(code)) + ")"
         s.code_type = CodeType.from_id(code[15] & 0x03)
         s.key = str(self.dictionary.index(setup_code[17]))
-
-        print("Debugging values:")
-        print("\tmaterial id: %d" % self._decode_material(code))
-        print("\tabs: %d\n\tppsf: %d\n\tiso: %d\n\tmat: %d\n" % (code[5], code[10], code[11], code[16]))
 
         return s
 

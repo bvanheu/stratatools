@@ -125,7 +125,7 @@ unlock specific features of your printer.
 To decode a configuration code, simply run the following:
 
 ```
-$ stratatools setupcode -d AAAA-BBBB-CCCC-DDDD
+$ stratatools setupcode_decode AAAA-BBBB-CCCC-DDDD
 ```
 
 ### Create your own configuration code
@@ -135,7 +135,7 @@ You can create your own configuration code to enable specific features.
 For example:
 
 ```
-$ stratatools setupcode -e -n 1234 -s 900mc -t configuration -l large -b 1x -m ABS-M30 NYLON PC-ABS -v 1
+$ stratatools setupcode_create -n 1234 -s 900mc -t configuration -l large -b 1x -m ABS-M30 NYLON PC-ABS -v 1
 ```
 
 Will generate a `configuration` code for a printer type 900mc.
@@ -155,7 +155,7 @@ The available options:
 For help on available values, you can run the following:
 
 ```
-$ stratatools setupcode --help
+$ stratatools setupcode_create --help
 ```
 
 ## Interesting fork / rewrite
