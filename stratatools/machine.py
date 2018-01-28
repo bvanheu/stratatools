@@ -16,6 +16,9 @@ type_to_number = {
 
 number_to_type = {}
 
+def get_machine_types():
+    return type_to_number.keys()
+
 def get_number_from_type(type):
     return type_to_number[type]
 

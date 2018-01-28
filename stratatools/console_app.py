@@ -40,7 +40,7 @@ class StratatoolsConsoleApp():
 
         # EEPROM encode options
         eeprom_encode = subparsers.add_parser("eeprom_encode", help="EEPROM - encode from a protobuf")
-        eeprom_encode.add_argument("-t", "--machine-type", action="store", choices=["fox", "fox2", "prodigy", "quantum", "uprint", "uprintse"], help="Machine type (Fox T-class, Prodigy P-class, Quantum, uPrint, uPrint SE)", required=True)
+        eeprom_encode.add_argument("-t", "--machine-type", action="store", choices=machine.get_machine_types(), help="Machine type (Fox T-class, Prodigy P-class, Quantum, uPrint, uPrint SE)", required=True)
         eeprom_encode.add_argument("-e", "--eeprom-uid", action="store", dest="eeprom_uid", required=True, help="Format: [a-f0-9]{14}23, example: 11010a01ba325d23")
         eeprom_encode.add_argument("-D", "--diag-format", action="store_true", dest="diag_format", help="Produce output in the ASCII format used over the printer diagnostic port")
         eeprom_encode.add_argument("-a", "--use-ascii", action="store_true", dest="use_ascii", help="Use ASCII format for output file")
@@ -50,7 +50,7 @@ class StratatoolsConsoleApp():
 
         # EEPROM decode options
         eeprom_decode = subparsers.add_parser("eeprom_decode", help="EEPROM - decode from a binary dump")
-        eeprom_decode.add_argument("-t", "--machine-type", action="store", choices=["fox", "fox2", "prodigy", "quantum", "uprint", "uprintse"], help="Machine type (Fox T-class, Prodigy P-class, Quantum, uPrint, uPrint SE)", required=True)
+        eeprom_decode.add_argument("-t", "--machine-type", action="store", choices=machine.get_machine_types(), help="Machine type (Fox T-class, Prodigy P-class, Quantum, uPrint, uPrint SE)", required=True)
         eeprom_decode.add_argument("-e", "--eeprom-uid", action="store", dest="eeprom_uid", required=True, help="Format: [a-f0-9]{14}23, example: 11010a01ba325d23")
         eeprom_decode.add_argument("-D", "--diag-format", action="store_true", dest="diag_format", help="Read input in the ASCII format used over the printer diagnostic port")
         eeprom_decode.add_argument('input_file', nargs='?', type=argparse.FileType('r'), default=sys.stdin)
