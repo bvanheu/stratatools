@@ -12,6 +12,12 @@ This tool requires Python 2.7.
 You can simply installs Stratatools using pip:
 
 ```
+$ pip2 install stratatools
+```
+
+or from source:
+
+```
 $ python2 ./setup.py build
 $ python2 ./setup.py install
 ```
@@ -20,7 +26,8 @@ It will automagically pull the dependency:
 
 - [pycrypto](https://www.dlitz.net/software/pycrypto/)
 - [pyserial](https://github.com/pyserial/pyserial/)
-
+- [protobuf](https://github.com/google/protobuf/tree/master/python)
+- [pyudev](https://github.com/pyudev/pyudev)
 
 ## Cartridge Usage
 
@@ -107,6 +114,29 @@ EEPROM correctly. Verify that your EEPROM file is valid, double check the
 EEPROM uid.
 
 If it still doesn't work, fill a ticket on Github.
+
+### Automation with a Raspberry Pi
+
+A helper script is available if you wish to automatically rewrite cartridges
+using a Raspberry Pi. The script will set the manufacturing date to 'today'.
+It will also randomize the serial number and set the current material qty to
+the initial material quantity.
+
+You will need a working 1wire setup on the Raspberry Pi, see below on how to
+do that.
+
+To simply refill a cartridge, launch the helper script specifying the printer
+type:
+
+```
+$ stratatools_rpi_daemon prodigy
+```
+
+You can also provide a cartridge template:
+```
+$ stratatools_rpi_daemon --template ./abs_cartridge.txt prodigy
+```
+
 
 ## Configuration Code
 
@@ -227,6 +257,20 @@ Then you'll need to probe 2 kernel modules:
 ```
 $ sudo modprobe w1-gpio gpiopin=4
 $ sudo modprobe w1-ds2433
+```
+
+You might need to change the device-tree overlay. Update the following file
+`/boot/config.txt`, and add this line at the end:
+
+```
+dtoverlay=w1-gpio,gpiopin=4
+```
+
+If detection is slow on the bus, you can try to reduce the timeout. Create
+the following file `/etc/modprobe.d/wire.conf` with the following:
+
+```
+options wire timeout=1 slave_ttl=3
 ```
 
 You should now see your eeprom appearing:

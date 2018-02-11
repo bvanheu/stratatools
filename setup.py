@@ -20,13 +20,15 @@ setup(
     install_requires=[
         'pycrypto',
         'pyserial',
-        'protobuf'
+        'protobuf',
+        'pyudev'
     ],
     entry_points={
         'console_scripts': [
             'stratatools=stratatools.console_app:main',
             'stratatools_bp_read=stratatools.helper.bp_read:main',
             'stratatools_bp_write=stratatools.helper.bp_write:main',
+            'stratatools_rpi_daemon=stratatools.helper.rpi_daemon:main',
         ],
     },
 )
