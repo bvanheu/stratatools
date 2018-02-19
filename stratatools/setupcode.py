@@ -42,19 +42,22 @@ class Setupcode():
         pass
 
 class CodeMaterial():
-    id_to_material = ["unknown"] * 0x10
-    id_to_material[0x00] = "ABS"
-    id_to_material[0x01] = "PC-ABS"
-    id_to_material[0x02] = "PC"
-    id_to_material[0x03] = "PC-ISO"
-    id_to_material[0x04] = "PPSF"
-    id_to_material[0x05] = "ABS-M30"
-    id_to_material[0x06] = "ABSI"
-    id_to_material[0x07] = "ABS-M30I"
-    id_to_material[0x08] = "ULT9085"
-    id_to_material[0x09] = "ABS-ESD7"
-    id_to_material[0x0A] = "NYLON"
-    id_to_material[0x0B] = "RD1-RD2-RD3-RD4-RD5"
+    # Material is encoded on 32 bit
+    id_to_material = ["unknown"] * 32
+    id_to_material[0] = "ABS"
+    id_to_material[1] = "PC-ABS"
+    id_to_material[2] = "PC"
+    id_to_material[3] = "PC-ISO"
+    id_to_material[4] = "PPSF"
+    id_to_material[5] = "ABS-M30"
+    id_to_material[6] = "ABSI"
+    id_to_material[7] = "ABS-M30I"
+    id_to_material[8] = "ULT9085"
+    id_to_material[9] = "ABS-ESD7"
+    id_to_material[10] = "NYLON"
+    id_to_material[11] = "RD1-RD2-RD3-RD4-RD5"
+    id_to_material[12] = "ASA"
+    id_to_material[13] = "ULT1010"
 
     @staticmethod
     def all():
@@ -121,19 +124,22 @@ class CodeType():
         return CodeType.id_to_codetype[id]
 
 class SystemType():
-    id_to_systemtype = ["unknown"] * 0x10
-    id_to_systemtype[0x1] = "vantage"
-    id_to_systemtype[0x2] = "vantage_b"
-    id_to_systemtype[0x3] = "vantage_i_abs"
-    id_to_systemtype[0x4] = "vantage_s"
-    id_to_systemtype[0x5] = "vantage_se"
-    id_to_systemtype[0x6] = "titan"
-    id_to_systemtype[0x7] = "titan_hw"
-    id_to_systemtype[0x8] = "titan_ti"
-    id_to_systemtype[0x9] = "vantage_i_pc"
-    id_to_systemtype[0xc] = "400mc"
-    id_to_systemtype[0xe] = "900mc"
-    id_to_systemtype[0xf] = "360mc"
+    id_to_systemtype = ["unknown"] * 16
+    id_to_systemtype[1] = "vantage"
+    id_to_systemtype[2] = "vantage_b"
+    id_to_systemtype[3] = "vantage_i_abs"
+    id_to_systemtype[4] = "vantage_s"
+    id_to_systemtype[5] = "vantage_se"
+    id_to_systemtype[6] = "titan"
+    id_to_systemtype[7] = "titan_hw"
+    id_to_systemtype[8] = "titan_ti"
+    id_to_systemtype[9] = "vantage_i_pc"
+    id_to_systemtype[10] = "unknown_10"
+    id_to_systemtype[11] = "unknown_11"
+    id_to_systemtype[12] = "400mc"
+    id_to_systemtype[13] = "900mc"
+    id_to_systemtype[14] = "unknown_14"
+    id_to_systemtype[15] = "360mc"
 
     @staticmethod
     def all():
@@ -250,9 +256,9 @@ class SetupcodeEncoder():
             # sn4
             output_code[18] = self._encode_param(seed_code[18], int(serial_number[3]), 0x1F)
         elif code_type == "clear":
-            pass
+            raise(Exception("code_type `clear` not supported"))
         elif code_type == "setup":
-            pass
+            raise(Exception("code_type `setup` not supported"))
         else:
             raise(Exception("invalid code_type <" + code_type + ">"))
 
@@ -306,10 +312,10 @@ class SetupcodeEncoder():
         counter = 0
         i=1
 
-        while i <= 256:
+        while i <= 2**32:
             if material & i:
                 supported_material += CodeMaterial.from_id(counter) + " "
-            i *= 2
+            i <<= 1
             counter+=1
 
         # Another version found:

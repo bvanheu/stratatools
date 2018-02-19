@@ -306,3 +306,4 @@ Special thanks to the Stratahackers group. Without them, nothing like this could
 be possible. They provided moral and technical support!
 
 Thanks to ashanin for the uPrint support.
+Thanks to ajtayh for ASA and ULT1010 in setupcode.
