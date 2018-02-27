@@ -191,6 +191,8 @@ $ stratatools setupcode_create --help
 ## Interesting fork / rewrite
 
 * [slaytonrd/CartridgeWriter](https://github.com/slaytonrnd/CartridgeWriter) - rewritten in C# by slaytonrd
+* [mayrthom/CartridgeWriter_uPrint](https://github.com/mayrthom/CartridgeWriter_uPrint) - rewrite of the CartridgeWriter, that works with the uPrint
+
 
 ## Interfacing with the cartridge
 
