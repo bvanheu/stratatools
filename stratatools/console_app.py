@@ -107,7 +107,7 @@ class StratatoolsConsoleApp():
 
         machine_number = machine.get_number_from_type(args.machine_type)
 
-        m = manager.Manager(crypto.Desx_Crypto(), checksum.Crc16_Checksum())
+        m = manager.Manager_v3(crypto.Desx_Crypto(), checksum.Crc16_Checksum())
         eeprom = m.encode(machine_number, args.eeprom_uid.decode("hex"), cartridge)
 
         if args.use_ascii:
@@ -126,6 +126,7 @@ class StratatoolsConsoleApp():
         if args.diag_format:
             cartridge_crypted = self.diag_formatter.from_source(cartridge_crypted)
 
+        #m = manager.Manager_v3(crypto.Desx_Crypto(), checksum.Crc16_Checksum())
         m = manager.Manager(crypto.Desx_Crypto(), checksum.Crc16_Checksum())
         machine_number = machine.get_number_from_type(args.machine_type)
         cartridge = m.decode(machine_number, args.eeprom_uid.decode("hex"), bytearray(cartridge_crypted))
