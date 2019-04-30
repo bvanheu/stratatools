@@ -11,6 +11,9 @@
 #
 
 id_to_name = ["unknown"] * 0x1000
+for i in range(0, 0x1000):
+    id_to_name[i] = "unknown_" + hex(i)[2:]
+
 id_to_name[0x00] = "ABS"
 id_to_name[0x01] = "ABS_RED"
 id_to_name[0x02] = "ABS_GRN"
@@ -103,6 +106,9 @@ id_to_name[0xaa] = "ABS_SS"
 id_to_name[0xab] = "SR30"
 id_to_name[0xad] = "ULT_S2"
 id_to_name[0xae] = "SR-100"
+id_to_name[0xaf] = "ULTM-BLK"
+id_to_name[0xb0] = "SR-110"
+id_to_name[0xb1] = "SR35"
 id_to_name[0xb4] = "PC-ISO"
 id_to_name[0xbe] = "PC-ISO-T"
 id_to_name[0xbf] = "P1_5M1"
@@ -150,6 +156,12 @@ id_to_name[0x135] = "ASA_DGRY"
 id_to_name[0x136] = "ULT1010"
 id_to_name[0x137] = "U1010BLK"
 id_to_name[0x138] = "U1010S1"
+id_to_name[0x140] = "U9085CG"
+id_to_name[0x154] = "NYL6"
+id_to_name[0x15e] = "PCABS-FR"
+id_to_name[0x168] = "ST130"
+id_to_name[0x169] = "ST130_S"
+# Duplicate names, ending with '_2'
 id_to_name[0x1f4] = "ABS-M30_2"
 id_to_name[0x1f7] = "M30_BLK_2"
 id_to_name[0x208] = "PC_2"
@@ -158,9 +170,10 @@ id_to_name[0x226] = "ASA_2"
 id_to_name[0x227] = "ASA_BLK_2"
 id_to_name[0x244] = "NYL12_2"
 id_to_name[0x384] = "SR30_2"
-id_to_name[0x385] = "SR-110"
+id_to_name[0x385] = "SR-110_2"
 id_to_name[0x386] = "PC_S_2"
 id_to_name[0x387] = "ULT_S_2"
+id_to_name[0x388] = "SR35_2"
 
 
 name_to_id = {}
