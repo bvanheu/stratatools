@@ -95,3 +95,15 @@ class Desx_Crypto(Crypto):
             des = DES.new(str(key[0:8]), DES.MODE_CBC, str(bytearray(8))).decrypt
 
         return plaintext
+
+class Xor_Crypto(Crypto):
+    def __init__(self):
+        pass
+
+    def encrypt(self, key, plaintext):
+        for i in range(0,8):
+            plaintext[i] = (key[i] ^ plaintext[i]) & 0xff
+        return plaintext
+
+    def decrypt(self, key, plaintext):
+        return self.encrypt(key, plaintext)
