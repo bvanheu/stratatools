@@ -38,11 +38,13 @@ in hexadecimal form without the '0x' prefix. Note that the EEPROM uid to use end
 with "23" (which is the family code for the EEPROM device).
 
 ```
-$ stratatools eeprom_decode -t fox -e 6b0000014d476223 cartridge_dump.bin
+$ stratatools eeprom_decode -t fox -e 2362474d0100006b cartridge_dump.bin
 ```
 
-The EEPROM uid should end with '23'. You may have to reverse the byte order. Say you have
-"233a38b1020000c0" - you should reverse it to be "c0000002b1383a23".
+The EEPROM uid should starts with the family code, something like '23' or 'b3'.
+It is then followed by a 6 bytes id then finish with a checksum.
+
+On Linux, it is the content of the `id` pseudo file.
 
 If you provide the '-D' option, the input file will be interpreted as an ASCII formatted file,
 containing lines of the form produced by the printers 'er' command, namely:
@@ -71,13 +73,13 @@ All the dates are in international format: `yyyy-mm-dd hh:mm:ss`.
 You can then use `eeprom_encode` to create the binary file used by the printer.
 
 ```
-$ stratatools eeprom_encode -t fox -e 6b0000014d476223 cartridge.txt cartridge.bin
+$ stratatools eeprom_encode -t fox -e 2362474d0100006b cartridge.txt cartridge.bin
 ```
 
 You have to provide the correct machine-type and the valid eeprom uid.
 
-The EEPROM uid used to end with '23'. You may have to reverse it. Say you have
-`233a38b1020000c0`, you should reverse it to be `c0000002b1383a23`.
+The EEPROM uid should starts with the family code, something like '23' or 'b3'.
+It is then followed by a 6 bytes id then finish with a checksum.
 
 The generated file will be 113 bytes in size. You can complete the file with zeroes
 if you want to make it 512 bytes long, the usual EEPROM size.
@@ -90,7 +92,7 @@ Otherwise, the output will be a binary file.
 You can also pipe the two commands together:
 
 ```
-$ stratatools eeprom_create --serial-number 1234.0 --material-name ABS --manufacturing-lot 1234 --manufacturing-date "2001-01-01 01:01:01" --use-date "2002-02-02 02:02:02" --initial-material 11.1 --current-material 22.2 --key-fragment 4141414141414141 --version 1 --signature STRATASYS | stratatools eeprom_encode -t fox -e 6b0000014d476223 > cartridge.bin
+$ stratatools eeprom_create --serial-number 1234.0 --material-name ABS --manufacturing-lot 1234 --manufacturing-date "2001-01-01 01:01:01" --use-date "2002-02-02 02:02:02" --initial-material 11.1 --current-material 22.2 --key-fragment 4141414141414141 --version 1 --signature STRATASYS | stratatools eeprom_encode -t fox -e 2362474d0100006b > cartridge.bin
 ```
 
 ### List supported material

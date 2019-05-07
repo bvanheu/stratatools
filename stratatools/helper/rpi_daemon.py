@@ -14,31 +14,31 @@ cartridge_manager = None
 machine_number = None
 cartridge_template = None
 
-def read_eeprom(path):
+def read_bytes(path):
     data = None
     with open(path, "r") as f:
         data = bytearray(f.read())
     return data
 
-def write_eeprom(path, data):
+def write_bytes(path, data):
     with open(path, "w", buffering=0) as f:
         f.write(data)
 
 def on_new_cartridge(device):
     eeprom_path = "/sys/" + device.device_path + "/eeprom"
-    eeprom_uid = device.device_path.split("/")[-1].replace("-", "")
+    eeprom_uid = read_bytes("/sys/" + device.device_path + "/id")
 
     print("New device detected <" + eeprom_uid + ">.")
     try:
         c = cartridge_template
 
         if c is None:
-            c = cartridge_manager.decode(machine_number, eeprom_uid, read_eeprom(eeprom_path))
+            c = cartridge_manager.decode(machine_number, eeprom_uid, read_bytes(eeprom_path))
             print("Device is a valid cartridge.")
 
         c = cartridge.refill(c)
 
-        write_eeprom(eeprom_path, cartridge_manager.encode(machine_number, eeprom_uid, c))
+        write_bytes(eeprom_path, cartridge_manager.encode(machine_number, eeprom_uid, c))
 
         print("Refill complete!")
         print("You can safely disconnect the cartridge.")
