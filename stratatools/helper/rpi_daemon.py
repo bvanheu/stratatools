@@ -14,6 +14,7 @@ from google.protobuf.text_format import MessageToString, Merge
 cartridge_manager = None
 machine_number = None
 cartridge_template = None
+cartridge_secret = None
 
 def read_bytes(path):
     data = None
@@ -28,6 +29,7 @@ def write_bytes(path, data):
 def on_new_cartridge(device):
     eeprom_path = "/sys/" + device.device_path + "/eeprom"
     eeprom_uid = read_bytes("/sys/" + device.device_path + "/id")
+    secret_path = "/sys/" + device.device_path + "/secret"
 
     print("New device detected <" + binascii.hexlify(eeprom_uid) + ">.")
     try:
@@ -38,6 +40,8 @@ def on_new_cartridge(device):
             print("Device is a valid cartridge.")
 
         c = cartridge.refill(c)
+
+        write_bytes(secret_path, cartridge_secret)
 
         write_bytes(eeprom_path, cartridge_manager.encode(machine_number, eeprom_uid, c))
 
@@ -64,6 +68,7 @@ def main():
 
     parser = argparse.ArgumentParser(description="Raspberry Pi Flasher Daemon")
     parser.add_argument("-t", "--template", action="store", type=str,  dest="template", help="Path to cartridge configuration")
+    parser.add_argument("-s", "--secret", action="store", type=str,  dest="template", help="Secret to use")
     parser.add_argument("machine_type", action="store", choices=machine.get_machine_types())
     args = parser.parse_args()
 
@@ -74,6 +79,10 @@ def main():
     if args.template:
         cartridge_template = read_cartridge_template(args.template)
         print("Fill cartridge using template from <" + args.template + ">.")
+
+    if args.secret:
+        cartridge_secret = binascii.unhexlify(args.secret)
+        print("Using cartridge secret <" + args.secret + ">.")
 
     context = pyudev.Context()
     monitor = pyudev.Monitor.from_netlink(context)
