@@ -224,8 +224,8 @@ class Manager:
     # Build a key used to encrypt/decrypt a cartridge
     #
     def build_key(self, cartridge_key, machine_number, eeprom_uid):
-        machine_number = bytearray(machine_number.decode("hex"))
-        eeprom_uid = bytearray(eeprom_uid.decode("hex"))
+        machine_number = bytearray(machine_number)
+        eeprom_uid = bytearray(eeprom_uid)
         key = bytearray(16)
 
         key[0] = ~cartridge_key[0] & 0xff

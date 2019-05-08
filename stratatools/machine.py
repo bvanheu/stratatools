@@ -2,6 +2,8 @@
 # See the LICENSE file
 #
 
+import binascii
+
 #
 # A machine is a printer from stratasys
 #
@@ -20,11 +22,11 @@ def get_machine_types():
     return type_to_number.keys()
 
 def get_number_from_type(type):
-    return type_to_number[type]
+    return type_to_number[type].decode("hex")
 
 def get_type_from_number(number):
     if len(number_to_type) == 0:
         for key, value in enumerate(type_to_number):
             number_to_type[value] = key
 
-    return number_to_type[number]
+    return number_to_type[binascii.hexlify(number)]

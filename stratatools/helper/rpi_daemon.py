@@ -1,6 +1,7 @@
 #!/usr/bin/env python2
 
 import argparse
+import binascii
 import pyudev
 import sys
 import time
@@ -28,7 +29,7 @@ def on_new_cartridge(device):
     eeprom_path = "/sys/" + device.device_path + "/eeprom"
     eeprom_uid = read_bytes("/sys/" + device.device_path + "/id")
 
-    print("New device detected <" + eeprom_uid + ">.")
+    print("New device detected <" + binascii.hexify(eeprom_uid) + ">.")
     try:
         c = cartridge_template
 
