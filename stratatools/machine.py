@@ -14,6 +14,7 @@ type_to_number = {
     "prodigy": "5394D7657CED641D",
     "quantum": "76C454D532E610F7",
     "uprint": "F3A91DBE6B0B2255",
+    "uprintse": "09FBD4B61FC0B327",
 }
 
 number_to_type = {}
