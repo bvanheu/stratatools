@@ -3,7 +3,8 @@ Stratatools
 
 This is software to read and write data on a Stratasys cartridge EEPROM.
 
-You can use this code to 'refill' an EEPROM or build a cartridge EEPROM image from scratch.
+You can use this code to 'refill' an EEPROM or build a cartridge EEPROM image
+from scratch.
 
 ## Installation
 
@@ -33,12 +34,15 @@ It will automagically pull the dependency:
 
 ### Print information about a cartridge
 
-You have to provide the machine type (fox, prodigy, quantum, etc.) and the EEPROM uid,
-in hexadecimal form without the '0x' prefix. Note that the EEPROM uid to use ends
-with "23" (which is the family code for the EEPROM device).
+You have to provide the machine type (fox, prodigy, quantum, etc.) and the
+EEPROM uid, in hexadecimal form without the '0x' prefix. Note that the EEPROM
+uid to use ends with "23" (which is the family code for the EEPROM device).
 
 ```
-$ stratatools eeprom_decode -t fox -e 2362474d0100006b cartridge_dump.bin
+$ stratatools eeprom_decode \
+    --machine-type fox \
+    --eeprom-uid 2362474d0100006b \
+    cartridge_dump.bin
 ```
 
 The EEPROM uid should starts with the family code, something like '23' or 'b3'.
@@ -46,8 +50,9 @@ It is then followed by a 6 bytes id then finish with a checksum.
 
 On Linux, it is the content of the `id` pseudo file.
 
-If you provide the '-D' option, the input file will be interpreted as an ASCII formatted file,
-containing lines of the form produced by the printers 'er' command, namely:
+If you provide the '-D' option, the input file will be interpreted as an ASCII
+formatted file, containing lines of the form produced by the printers 'er'
+command, namely:
 
 ```
 000096: 00 00 00 00 00 00 00 00 53 54 52 41 54 41 53 59   ........STRATASY
@@ -57,15 +62,43 @@ Otherwise, the input file must be a binary file.
 
 ### Create your own cartridge
 
-By providing all the required information, this software will provide a new valid EEPROM image
-that you can write to a cartridge.
+By providing all the required information, this software will provide a new
+valid EEPROM image that you can write to a cartridge.
 
 First, create a new EEPROM proto using the `eeprom_create` command.
 
 You can customize any parameters in the following example:
 
 ```
-$ stratatools eeprom_create --serial-number 1234.0 --material-name ABS --manufacturing-lot 1234 --manufacturing-date "2001-01-01 01:01:01" --use-date "2002-02-02 02:02:02" --initial-material 11.1 --current-material 22.2 --key-fragment 4141414141414141 --version 1 --signature STRATASYS cartridge.txt
+$ stratatools eeprom_create \
+    --serial-number 1234.0 \
+    --material-name ABS \
+    --manufacturing-lot 1234 \
+    --manufacturing-date "2001-01-01 01:01:01" \
+    --use-date "2002-02-02 02:02:02" \
+    --initial-material 11.1 \
+    --current-material 22.2 \
+    --key-fragment 4141414141414141 \
+    --version 1 \
+    --signature STRATASYS > cartridge.txt
+```
+
+Alternatively, create a text file with the following content:
+```
+serial_number: 1234.0
+material_name: "ABS"
+manufacturing_lot: "1234"
+manufacturing_date {
+  seconds: 1436540129
+}
+last_use_date {
+  seconds: 1436540129
+}
+initial_material_quantity: 42.0
+current_material_quantity: 42.0
+key_fragment: "4141414141414141"
+version: 1
+signature: "STRATASYS"
 ```
 
 All the dates are in international format: `yyyy-mm-dd hh:mm:ss`.
@@ -73,7 +106,10 @@ All the dates are in international format: `yyyy-mm-dd hh:mm:ss`.
 You can then use `eeprom_encode` to create the binary file used by the printer.
 
 ```
-$ stratatools eeprom_encode -t fox -e 2362474d0100006b cartridge.txt cartridge.bin
+$ stratatools eeprom_encode \
+    -machine-type fox \
+    -eeprom-uid 2362474d0100006b \
+    cartridge.txt cartridge.bin
 ```
 
 You have to provide the correct machine-type and the valid eeprom uid.
@@ -81,18 +117,29 @@ You have to provide the correct machine-type and the valid eeprom uid.
 The EEPROM uid should starts with the family code, something like '23' or 'b3'.
 It is then followed by a 6 bytes id then finish with a checksum.
 
-The generated file will be 113 bytes in size. You can complete the file with zeroes
-if you want to make it 512 bytes long, the usual EEPROM size.
+The generated file will be 113 bytes in size. You can complete the file with
+zeroes if you want to make it 512 bytes long, the usual EEPROM size.
 
-Supplying the '-D' option will result in an output file containing a double-quoted string
-of space delimited bytes, expressed in hexadecimal.
+Supplying the '-D' option will result in an output file containing a
+double-quoted string of space delimited bytes, expressed in hexadecimal.
 
 Otherwise, the output will be a binary file.
 
 You can also pipe the two commands together:
 
 ```
-$ stratatools eeprom_create --serial-number 1234.0 --material-name ABS --manufacturing-lot 1234 --manufacturing-date "2001-01-01 01:01:01" --use-date "2002-02-02 02:02:02" --initial-material 11.1 --current-material 22.2 --key-fragment 4141414141414141 --version 1 --signature STRATASYS | stratatools eeprom_encode -t fox -e 2362474d0100006b > cartridge.bin
+$ stratatools eeprom_create \
+    --serial-number 1234.0 \
+    --material-name ABS \
+    --manufacturing-lot 1234 \
+    --manufacturing-date "2001-01-01 01:01:01" \
+    --use-date "2002-02-02 02:02:02" \
+    --initial-material 11.1 \
+    --current-material 22.2 \
+    --key-fragment 4141414141414141 \
+    --version 1 \
+    --signature STRATASYS | \
+    stratatools eeprom_encode -t fox -e 2362474d0100006b > cartridge.bin
 ```
 
 ### List supported material
@@ -167,22 +214,17 @@ You can create your own configuration code to enable specific features.
 For example:
 
 ```
-$ stratatools setupcode_create -n 1234 -s 900mc -t configuration -l large -b 1x -m ABS-M30 NYLON PC-ABS -v 1
+$ stratatools setupcode_create \
+    --serial-number 1234 \
+    --system-type 900mc \
+    --type configuration \
+    --envelope-size large \
+    --build-speed 1x \
+    --material ABS-M30 NYLON PC-ABS \
+    --version 1
 ```
 
 Will generate a `configuration` code for a printer type 900mc.
-
-The available options:
-
-* -e : encode
-* -n : serial number (format ABCD)
-* -s : machine type
-* -t : code type (put `configuration` unless you know what you're doing)
-* -l : envelope size
-* -b : build speed
-* -m : supported material (you can put a list of materials after the `-m` separated by space)
-* -v : version of the code (put `1` unless you know what you're doing)
-* -k : specify the key that should be used to encode (OPTIONAL)
 
 For help on available values, you can run the following:
 
@@ -304,10 +346,15 @@ To write an eeprom:
 $ cp ~/eeprom_new.bin /sys/bus/w1/devices/w1_bus_master1/23-xxxxxxxxxxxx/eeprom
 ```
 
+#### DS2432
+
+To interface with a DS2432, you'll need to follow the steps found in this
+project: https://github.com/bvanheu/ds2432-linux .
+
 ## Acknowledgement
 
-Special thanks to the Stratahackers group. Without them, nothing like this could
-be possible. They provided moral and technical support!
+Special thanks to the Stratahackers group. Without them, nothing like this
+could be possible. They provided moral and technical support!
 
 Thanks to ashanin for the uPrint support.
 Thanks to ajtayh for ASA and ULT1010 in setupcode.
