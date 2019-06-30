@@ -83,7 +83,7 @@ $ stratatools eeprom_create \
     --signature STRATASYS > cartridge.txt
 ```
 
-Alternatively, create a text file with the following content:
+Alternatively, create a text file `cartridge.txt` with the following content:
 ```
 serial_number: 1234.0
 material_name: "ABS"
@@ -107,8 +107,8 @@ You can then use `eeprom_encode` to create the binary file used by the printer.
 
 ```
 $ stratatools eeprom_encode \
-    -machine-type fox \
-    -eeprom-uid 2362474d0100006b \
+    --machine-type fox \
+    --eeprom-uid 2362474d0100006b \
     cartridge.txt cartridge.bin
 ```
 
