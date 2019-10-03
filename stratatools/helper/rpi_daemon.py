@@ -28,7 +28,7 @@ def write_bytes(path, data):
 
 def on_new_cartridge(device):
     eeprom_path = "/sys/" + device.device_path + "/eeprom"
-    eeprom_uid = read_bytes("/sys/" + device.device_path + "/id")
+    eeprom_uid = binascii.hexlify(read_bytes("/sys/" + device.device_path + "/id"))
     secret_path = "/sys/" + device.device_path + "/secret"
 
     print("New device detected <" + binascii.hexlify(eeprom_uid) + ">.")
@@ -65,14 +65,15 @@ def main():
     global cartridge_manager
     global machine_number
     global cartridge_template
+    global cartridge_secret
 
     parser = argparse.ArgumentParser(description="Raspberry Pi Flasher Daemon")
     parser.add_argument("-t", "--template", action="store", type=str,  dest="template", help="Path to cartridge configuration")
-    parser.add_argument("-s", "--secret", action="store", type=str,  dest="template", help="Secret to use")
+    parser.add_argument("-s", "--secret", action="store", type=str,  dest="secret", help="Secret to use")
     parser.add_argument("machine_type", action="store", choices=machine.get_machine_types())
     args = parser.parse_args()
 
-    cartridge_manager = manager.Manager(crypto.Desx_Crypto(), checksum.Crc16_Checksum())
+    cartridge_manager = manager.Manager_v3(crypto.Desx_Crypto(), checksum.Crc16_Checksum())
     machine_number = machine.get_number_from_type(args.machine_type)
     cartridge_template = None
 
