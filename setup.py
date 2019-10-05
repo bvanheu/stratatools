@@ -23,6 +23,10 @@ setup(
         'protobuf',
         'pyudev'
     ],
+    extras_require={
+        'testing': ['pytest'],
+    },
+    test_suite='stratatools',
     entry_points={
         'console_scripts': [
             'stratatools=stratatools.console_app:main',
