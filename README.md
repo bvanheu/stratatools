@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/bvanheu/stratatools.svg?branch=master)](https://travis-ci.org/bvanheu/stratatools)
+
 Stratatools
 -----------
 
