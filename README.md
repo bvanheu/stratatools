@@ -27,7 +27,7 @@ $ python2 ./setup.py install
 
 It will automagically pull the dependency:
 
-- [pycrypto](https://www.dlitz.net/software/pycrypto/)
+- [pycryptodome](https://www.pycryptodome.org)
 - [pyserial](https://github.com/pyserial/pyserial/)
 - [protobuf](https://github.com/google/protobuf/tree/master/python)
 - [pyudev](https://github.com/pyudev/pyudev)
