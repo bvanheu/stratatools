@@ -3,7 +3,8 @@
 #
 
 import binascii
-from Crypto.Cipher import DES, XOR
+from Crypto.Cipher import DES
+from Crypto.Util.strxor import strxor
 
 class Crypto():
     def __init__(self):
@@ -67,8 +68,6 @@ class Desx_Crypto(Crypto):
     def encrypt(self, key, plaintext):
         (input_whitening_key, output_whitening_key) = self.build_whitening_keys(key)
 
-        input_whitener = XOR.new(str(input_whitening_key)).encrypt
-        output_whitener = XOR.new(str(output_whitening_key)).encrypt
         ciphertext = bytearray(len(plaintext))
 
         if (len(plaintext) % 8):
@@ -76,7 +75,8 @@ class Desx_Crypto(Crypto):
 
         des = DES.new(str(key[0:8]), DES.MODE_CBC, str(bytearray(8))).encrypt
         for i in range(len(plaintext)/8):
-            ciphertext[i*8:i*8+8] = bytearray(output_whitener(des(input_whitener(str(plaintext[i*8:i*8+8])))))
+            ciphertext[i*8:i*8+8] = strxor(output_whitening_key, des(strxor(input_whitening_key, str(plaintext[i*8:i*8+8]))))
+
             des = DES.new(str(key[0:8]), DES.MODE_CBC, str(bytearray(8))).encrypt
 
         return ciphertext
@@ -84,8 +84,6 @@ class Desx_Crypto(Crypto):
     def decrypt(self, key, ciphertext):
         (input_whitening_key, output_whitening_key) = self.build_whitening_keys(key)
 
-        input_whitener = XOR.new(str(input_whitening_key)).encrypt
-        output_whitener = XOR.new(str(output_whitening_key)).encrypt
         plaintext = bytearray(len(ciphertext))
 
         if (len(ciphertext) % 8):
@@ -93,7 +91,7 @@ class Desx_Crypto(Crypto):
 
         des = DES.new(str(key[0:8]), DES.MODE_CBC, str(bytearray(8))).decrypt
         for i in range(len(ciphertext)/8):
-            plaintext[i*8:i*8+8] = bytearray(input_whitener(des(output_whitener(str(ciphertext[i*8:i*8+8])))))
+            plaintext[i*8:i*8+8] = bytearray(strxor(input_whitening_key, des(strxor(output_whitening_key, str(ciphertext[i*8:i*8+8])))))
             des = DES.new(str(key[0:8]), DES.MODE_CBC, str(bytearray(8))).decrypt
 
         return plaintext

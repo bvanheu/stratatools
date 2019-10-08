@@ -18,7 +18,7 @@ setup(
     keywords='stratasys 3dprinting',
     packages=find_packages(exclude=['contrib', 'docs', 'tests']),
     install_requires=[
-        'pycrypto',
+        'pycryptodome',
         'pyserial',
         'protobuf',
         'pyudev'
