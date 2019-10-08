@@ -26,16 +26,17 @@ signature: "TESTTEST1"
 
 PACKED_CARTRIDGE_HEX = ("0000000000489340000000000000f03f35363738000000000000"
                         "0000000000000000000001000000650001010101010066000202"
-                        "0202020033333333333326400440000000000000414243444142"
-                        "4344dc2f00000000000033333333333336400000a8de00000000"
+                        "020202000000004033332640444a000000000000414243444142"
+                        "4344dc2f00000000000000000040333336400000e8d400000000"
                         "544553545445535431")
+
 
 class TestManager(unittest.TestCase):
     def test_pack(self):
         cartridge = Cartridge()
         Merge(CARTRIDGE_TEXT, cartridge)
 
-        expected_packed_eeprom = binascii.unhexlify(PACKED_CARTRIDGE_HEX)
+        expected_packed_eeprom = bytearray(binascii.unhexlify(PACKED_CARTRIDGE_HEX))
 
         crypto = Desx_Crypto()
         checksum = Crc16_Checksum()
