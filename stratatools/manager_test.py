@@ -44,3 +44,14 @@ class TestManager(unittest.TestCase):
         packed_eeprom = manager.pack(cartridge)
 
         assert expected_packed_eeprom == packed_eeprom
+
+    def test_pack_unpack(self):
+        expected_cartridge = Cartridge()
+        Merge(CARTRIDGE_TEXT, expected_cartridge)
+
+        crypto = Desx_Crypto()
+        checksum = Crc16_Checksum()
+        manager = Manager(crypto, checksum)
+        unpacked_cartridge = manager.unpack(manager.pack(expected_cartridge))
+
+        assert expected_cartridge == unpacked_cartridge
